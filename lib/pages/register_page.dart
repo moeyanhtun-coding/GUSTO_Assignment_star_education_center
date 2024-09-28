@@ -1,8 +1,12 @@
+// Import section //
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
+import 'package:star_education_center/ulti.dart';
 import 'package:star_education_center/widgets/custom_textfield.dart';
 
+// Register Page class //
 class RegisterPage extends StatelessWidget {
+  // Controller section //
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
@@ -10,6 +14,7 @@ class RegisterPage extends StatelessWidget {
   RegisterPage({super.key});
 
   @override
+  // Build method section //
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
@@ -26,9 +31,11 @@ class RegisterPage extends StatelessWidget {
     );
   }
 
+  // Register Form section //
   Widget _registerForm(context) {
     return Column(
       children: [
+        // Email TextField //
         customTextField(
           controller: emailController,
           hintText: "example@gmail.com",
@@ -36,7 +43,9 @@ class RegisterPage extends StatelessWidget {
           label: "Email",
           icon: Icons.mail,
         ),
-        _margin(0, 20),
+        // Margin between fields //
+        margin(width: 0, height: 20),
+        // Password TextField //
         customTextField(
           controller: passwordController,
           hintText: "********",
@@ -44,7 +53,9 @@ class RegisterPage extends StatelessWidget {
           label: "Password",
           icon: Icons.password,
         ),
-        _margin(0, 20),
+        // Margin between fields //
+        margin(width: 0, height: 20),
+        // Confirm Password TextField //
         customTextField(
           controller: confirmPasswordController,
           hintText: "********",
@@ -52,14 +63,19 @@ class RegisterPage extends StatelessWidget {
           label: "Confirm Password",
           icon: Icons.password,
         ),
-        _margin(0, 20),
+        // Margin before register button //
+        margin(width: 0, height: 20),
+        // Register Button //
         _registerButton(),
-        _margin(0, 20),
+        // Margin before sign-in prompt //
+        margin(width: 0, height: 20),
+        // Sign In section //
         _singIn()
       ],
     );
   }
 
+  // Register Button Widget //
   Widget _registerButton() {
     return SizedBox(
       width: double.infinity,
@@ -70,6 +86,7 @@ class RegisterPage extends StatelessWidget {
     );
   }
 
+  // Custom Margin Widget //
   Widget _margin(double width, double height) {
     return SizedBox(
       height: height,
@@ -77,6 +94,7 @@ class RegisterPage extends StatelessWidget {
     );
   }
 
+  // Sign In Widget //
   Widget _singIn() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
