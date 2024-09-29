@@ -1,5 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:star_education_center/ulti.dart';
+import 'package:carousel_slider/carousel_slider.dart';
+
+List<String> text = [
+  "Both Physical & Digital Certificates for All Students",
+  "Enrolled at Star Education Center! We offer a wide",
+  "range of programming and IT-related courses, with",
+  "certificates awarded upon completion of each course.",
+  "Whether you’re learning for personal growth or career",
+  "advancement, enjoy your learning experience with",
+  "us and gain recognition for your achievements."
+];
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -26,13 +37,19 @@ class _HomePageState extends State<HomePage> {
         ],
         title: Text("Home Page"),
       ),
-      body: Column(
-        children: [
-          _headerGroup(),
-          _enrollNow(),
-          _totalGroup(),
-          _header2(),
-        ],
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            _headerGroup(),
+            _enrollNow(),
+            _totalGroup(),
+            _header2(),
+            _carouselCourses(),
+            _certificateSection(),
+            _reviewSection(),
+            _reviewList()
+          ],
+        ),
       ),
     );
   }
@@ -157,7 +174,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _header2() {
-    return Row(
+    return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
@@ -167,8 +184,116 @@ class _HomePageState extends State<HomePage> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        Text(" Courses"),
+        Text(
+          "Popular Courses",
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ],
+    );
+  }
+
+  Widget _carouselCourses() {
+    return CarouselSlider(
+      options: CarouselOptions(
+        height: 240,
+        aspectRatio: 16 / 9,
+        viewportFraction: 0.8,
+        initialPage: 0,
+        enableInfiniteScroll: true,
+        reverse: false,
+        autoPlay: true,
+        autoPlayInterval: Duration(seconds: 3),
+        autoPlayAnimationDuration: Duration(milliseconds: 800),
+        autoPlayCurve: Curves.fastOutSlowIn,
+        enlargeCenterPage: true,
+        enlargeFactor: 0.25,
+        scrollDirection: Axis.horizontal,
+      ),
+      items: [1, 2, 3, 4, 5].map((i) {
+        return Builder(
+          builder: (BuildContext context) {
+            return Container(
+                width: MediaQuery.of(context).size.width,
+                margin: EdgeInsets.symmetric(horizontal: 5.0),
+                decoration: BoxDecoration(color: Colors.amber),
+                child: Text(
+                  'text $i',
+                  style: TextStyle(fontSize: 16.0),
+                ));
+          },
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _certificateSection() {
+    return Container(
+      child: Column(
+        children: [
+          Text(
+            "Certificate of Completion",
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          Container(
+            width: 300,
+            height: 400,
+            color: Colors.amberAccent,
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              for (int i = 0; i < text.length; i++)
+                Text(
+                  text[i],
+                  style: TextStyle(
+                    fontSize: 15,
+                    height: 1.6,
+                  ),
+                ),
+            ],
+          ),
+          ElevatedButton(
+            onPressed: () {},
+            child: Text("Start Learning"),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _reviewSection() {
+    return Text(
+      "Our Students' Reviews",
+      style: TextStyle(
+        fontSize: 20,
+        fontWeight: FontWeight.bold,
+      ),
+    );
+  }
+
+  Widget _reviewList() {
+    return Container(
+      height: 100, // Specify a height for the horizontal list
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal, // Set scroll direction to horizontal
+        itemCount: 10,
+        itemBuilder: (context, index) {
+          return Container(
+            width: 100,
+            margin: EdgeInsets.all(8.0),
+            color: Colors.blueAccent,
+            child: Center(
+              child: Text(
+                'Item $index',
+                style: TextStyle(color: Colors.white, fontSize: 18),
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
 }
