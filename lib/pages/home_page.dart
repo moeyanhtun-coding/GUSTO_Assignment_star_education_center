@@ -23,6 +23,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      bottomNavigationBar: _navigationBar(),
       appBar: AppBar(
         elevation: 10,
         actions: [
@@ -52,6 +53,23 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
     );
+  }
+
+  Widget _navigationBar() {
+    return NavigationBar(destinations: [
+      Container(
+        color: Colors.blueAccent,
+      ),
+      Container(
+        color: Colors.redAccent,
+      ),
+      Container(
+        color: Colors.greenAccent,
+      ),
+      Container(
+        color: Colors.pinkAccent,
+      ),
+    ]);
   }
 
   Widget _headerGroup() {
