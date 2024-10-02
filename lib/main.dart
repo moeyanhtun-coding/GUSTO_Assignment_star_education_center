@@ -11,7 +11,7 @@ void main() {
 final routes = [
   GetPage(name: '/login', page: () => LoginPage()),
   GetPage(name: '/register', page: () => RegisterPage()),
-  GetPage(name: '/home', page: () => HomePage())
+  GetPage(name: '/home', page: () => const HomePage())
 ];
 
 class MyApp extends StatelessWidget {
