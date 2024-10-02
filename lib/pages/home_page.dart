@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:star_education_center/pages/courses_page.dart';
 import 'package:star_education_center/ulti.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 
@@ -25,46 +26,55 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.black,
         elevation: 10,
         actions: [
           IconButton(
             onPressed: () {},
-            icon: Icon(
+            icon: const Icon(
               Icons.search,
               size: 30,
+              color: Colors.white,
             ),
           ),
           margin(width: 20, height: 0),
         ],
-        title: Text("Home Page"),
+        title: const Text(
+          "Home Page",
+          style: TextStyle(color: Colors.white),
+        ),
       ),
-      body: Container(
-        color: Color.fromARGB(255, 0, 17, 32),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              margin(width: 0, height: 60),
-              _headerGroup(),
-              margin(width: 0, height: 40),
-              _enrollNow(),
-              _image(),
-              _totalGroup(),
-              margin(width: 0, height: 40),
-              _header2(),
-              margin(width: 0, height: 40),
-              _carouselCourses(),
-              _certificateSection(),
-              _reviewSection(),
-              _reviewList()
-            ],
-          ),
+      body: CoursesPage(),
+    );
+  }
+
+  Widget _homePage() {
+    return Container(
+      color: const Color.fromARGB(255, 0, 17, 32),
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            margin(width: 0, height: 60),
+            _headerGroup(),
+            margin(width: 0, height: 40),
+            _enrollNow(),
+            _image(),
+            _totalGroup(),
+            margin(width: 0, height: 40),
+            _header2(),
+            margin(width: 0, height: 40),
+            _carouselCourses(),
+            _certificateSection(),
+            _reviewSection(),
+            _reviewList()
+          ],
         ),
       ),
     );
   }
 
   Widget _headerGroup() {
-    return Container(
+    return SizedBox(
       width: double.infinity,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -78,7 +88,7 @@ class _HomePageState extends State<HomePage> {
           margin(width: 0, height: 10),
           _header(
             "With Star Education Center",
-            Color.fromRGBO(33, 150, 243, 1),
+            const Color.fromRGBO(33, 150, 243, 1),
             FontWeight.bold,
             22,
           ),
@@ -101,7 +111,7 @@ class _HomePageState extends State<HomePage> {
 
   Widget _enrollNow() {
     return Container(
-      decoration: BoxDecoration(boxShadow: [
+      decoration: const BoxDecoration(boxShadow: [
         BoxShadow(
           color: Colors.blue,
           blurRadius: 25,
@@ -122,7 +132,7 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
         onPressed: () {},
-        child: Row(
+        child: const Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Icon(
@@ -145,7 +155,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _image() {
-    return Container(
+    return SizedBox(
       height: 300,
       width: 300,
       child: SvgPicture.asset(
@@ -159,8 +169,8 @@ class _HomePageState extends State<HomePage> {
       padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
       child: Container(
         decoration: BoxDecoration(
-          color: Color.fromARGB(255, 0, 17, 32),
-          boxShadow: [
+          color: const Color.fromARGB(255, 0, 17, 32),
+          boxShadow: const [
             BoxShadow(
               color: Colors.blue,
               blurRadius: 4,
@@ -181,7 +191,7 @@ class _HomePageState extends State<HomePage> {
             Container(
               decoration: BoxDecoration(
                 color: Colors.blue,
-                boxShadow: [
+                boxShadow: const [
                   BoxShadow(
                     color: Colors.blue,
                     blurRadius: 4,
@@ -202,7 +212,7 @@ class _HomePageState extends State<HomePage> {
             Container(
               decoration: BoxDecoration(
                 color: Colors.blue,
-                boxShadow: [
+                boxShadow: const [
                   BoxShadow(
                     color: Colors.blue,
                     blurRadius: 4,
@@ -238,7 +248,7 @@ class _HomePageState extends State<HomePage> {
         margin(width: 0, height: 6),
         Text(
           total,
-          style: TextStyle(
+          style: const TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
             fontSize: 14,
@@ -246,7 +256,7 @@ class _HomePageState extends State<HomePage> {
         ),
         Text(
           name,
-          style: TextStyle(
+          style: const TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.normal,
             fontSize: 10,
@@ -260,7 +270,7 @@ class _HomePageState extends State<HomePage> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text(
+        const Text(
           "Star Education Center's",
           style: TextStyle(
             fontSize: 26,
@@ -269,7 +279,7 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
         margin(width: 0, height: 4),
-        Text(
+        const Text(
           "Popular Courses",
           style: TextStyle(
             fontSize: 26,
@@ -284,15 +294,15 @@ class _HomePageState extends State<HomePage> {
   Widget _carouselCourses() {
     return CarouselSlider(
       options: CarouselOptions(
-        height: 400,
+        height: 490,
         aspectRatio: 16 / 10,
-        viewportFraction: 0.86,
+        viewportFraction: 0.87,
         initialPage: 0,
         enableInfiniteScroll: true,
         reverse: false,
         autoPlay: true,
-        autoPlayInterval: Duration(seconds: 3),
-        autoPlayAnimationDuration: Duration(milliseconds: 800),
+        autoPlayInterval: const Duration(seconds: 3),
+        autoPlayAnimationDuration: const Duration(milliseconds: 800),
         autoPlayCurve: Curves.fastOutSlowIn,
         enlargeCenterPage: true,
         enlargeFactor: 0.25,
@@ -302,22 +312,89 @@ class _HomePageState extends State<HomePage> {
         return Builder(
           builder: (BuildContext context) {
             return Container(
-                width: MediaQuery.of(context).size.width,
-                margin: EdgeInsets.symmetric(horizontal: 5.0),
-                decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Colors.blue,
-                    ),
-                    borderRadius: BorderRadius.all(Radius.circular(18))),
-                child: Container(
-                  child: Column(
-                    children: [
-                      ClipRRect(
-                        child: Image.asset('assets/courses/JS.png'),
-                      )
-                    ],
+              width: MediaQuery.of(context).size.width,
+              margin: const EdgeInsets.symmetric(horizontal: 5.0),
+              decoration: BoxDecoration(
+                  border: Border.all(
+                    color: Colors.blue,
                   ),
-                ));
+                  borderRadius: const BorderRadius.all(Radius.circular(18))),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    margin(width: 0, height: 20),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(18),
+                      child: Image.asset('assets/courses/JS.png'),
+                    ),
+                    margin(width: 0, height: 10),
+                    const Text(
+                      "Programming Basic With JavaScript",
+                      textAlign: TextAlign.start,
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 19,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    margin(width: 0, height: 6),
+                    Row(
+                      children: [
+                        const Text(
+                          "Chapters - 6",
+                          style: TextStyle(
+                            color: Colors.white70,
+                            fontSize: 14,
+                          ),
+                        ),
+                        margin(width: 30, height: 0),
+                        const Text(
+                          "Lessons - 20",
+                          style: TextStyle(
+                            color: Colors.white70,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ),
+                    margin(width: 0, height: 20),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            "Fees - 5000,000 MMK",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                            ),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {},
+                            style: ButtonStyle(
+                              backgroundColor: WidgetStateProperty.all(
+                                  Colors.blue), // Blue background
+                              shape: WidgetStateProperty.all(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                            ),
+                            child: const Text(
+                              "Enroll Now",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
           },
         );
       }).toList(),
@@ -325,85 +402,83 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _certificateSection() {
-    return Container(
-      child: Column(
-        children: [
-          margin(width: 0, height: 60),
-          Text(
-            "Certificate of Completion",
-            style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
+    return Column(
+      children: [
+        margin(width: 0, height: 60),
+        const Text(
+          "Certificate of Completion",
+          style: TextStyle(
+            fontSize: 28,
+            fontWeight: FontWeight.bold,
+            color: Colors.blue,
+          ),
+        ),
+        margin(width: 0, height: 30),
+        ClipRRect(
+          borderRadius:
+              BorderRadius.circular(15.0), // Set the border radius here
+          child: Image.asset(
+            'assets/certificate/certificate.jpg',
+            width: 380,
+          ),
+        ),
+        margin(width: 0, height: 20),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            for (int i = 0; i < text.length; i++)
+              Text(
+                text[i],
+                style: const TextStyle(
+                    fontSize: 15, height: 1.6, color: Colors.white),
+              ),
+          ],
+        ),
+        margin(width: 0, height: 40),
+        Container(
+          decoration: const BoxDecoration(boxShadow: [
+            BoxShadow(
               color: Colors.blue,
+              blurRadius: 25,
+              spreadRadius: 0.2,
+              offset: Offset(0, 0),
+            )
+          ]),
+          width: 180,
+          height: 50,
+          child: ElevatedButton(
+            style: ButtonStyle(
+              backgroundColor:
+                  WidgetStateProperty.all(Colors.blue), // Blue background
+              shape: WidgetStateProperty.all(
+                RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12), // Rounded corners
+                ),
+              ),
             ),
-          ),
-          margin(width: 0, height: 30),
-          ClipRRect(
-            borderRadius:
-                BorderRadius.circular(15.0), // Set the border radius here
-            child: Image.asset(
-              'assets/certificate/certificate.jpg',
-              width: 380,
-            ),
-          ),
-          margin(width: 0, height: 20),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              for (int i = 0; i < text.length; i++)
+            onPressed: () {},
+            child: const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Icon color white for visibility
                 Text(
-                  text[i],
-                  style:
-                      TextStyle(fontSize: 15, height: 1.6, color: Colors.white),
+                  "Start Learning",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                  ), // Text color white for visibility
                 ),
-            ],
-          ),
-          margin(width: 0, height: 40),
-          Container(
-            decoration: BoxDecoration(boxShadow: [
-              BoxShadow(
-                color: Colors.blue,
-                blurRadius: 25,
-                spreadRadius: 0.2,
-                offset: Offset(0, 0),
-              )
-            ]),
-            width: 180,
-            height: 50,
-            child: ElevatedButton(
-              style: ButtonStyle(
-                backgroundColor:
-                    WidgetStateProperty.all(Colors.blue), // Blue background
-                shape: WidgetStateProperty.all(
-                  RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12), // Rounded corners
-                  ),
-                ),
-              ),
-              onPressed: () {},
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Icon color white for visibility
-                  Text(
-                    "Start Learning",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                    ), // Text color white for visibility
-                  ),
-                ],
-              ),
+              ],
             ),
           ),
-          margin(width: 0, height: 40),
-        ],
-      ),
+        ),
+        margin(width: 0, height: 40),
+      ],
     );
   }
 
   Widget _reviewSection() {
-    return Text(
+    return const Text(
       "Our Students' Reviews",
       style: TextStyle(
         fontSize: 20,
@@ -413,7 +488,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _reviewList() {
-    return Container(
+    return SizedBox(
       height: 100, // Specify a height for the horizontal list
       child: ListView.builder(
         scrollDirection: Axis.horizontal, // Set scroll direction to horizontal
@@ -421,12 +496,12 @@ class _HomePageState extends State<HomePage> {
         itemBuilder: (context, index) {
           return Container(
             width: 100,
-            margin: EdgeInsets.all(8.0),
+            margin: const EdgeInsets.all(8.0),
             color: Colors.blueAccent,
             child: Center(
               child: Text(
                 'Item $index',
-                style: TextStyle(color: Colors.white, fontSize: 18),
+                style: const TextStyle(color: Colors.white, fontSize: 18),
               ),
             ),
           );
