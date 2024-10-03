@@ -4,6 +4,8 @@ import 'package:star_education_center/pages/courses_page.dart';
 import 'package:star_education_center/ulti.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 
+int _currentIndex = 0;
+
 List<String> text = [
   "Both Physical & Digital Certificates for All Students",
   "Enrolled at Star Education Center! We offer a wide",
@@ -25,6 +27,30 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      bottomNavigationBar: BottomNavigationBar(
+          selectedItemColor: Colors.blue,
+          unselectedItemColor: Colors.white,
+          backgroundColor: Colors.black,
+          currentIndex: _currentIndex, // Set the current selected index
+          onTap: (index) {
+            setState(() {
+              _currentIndex = index; // Update the selected index
+            });
+          },
+          items: [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.add_shopping_cart_sharp),
+              label: 'Courses',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person),
+              label: 'Student',
+            ),
+          ]),
       appBar: AppBar(
         backgroundColor: Colors.black,
         elevation: 10,
@@ -44,8 +70,19 @@ class _HomePageState extends State<HomePage> {
           style: TextStyle(color: Colors.white),
         ),
       ),
-      body: CoursesPage(),
+      body: _getSelectPage(),
     );
+  }
+
+  Widget _getSelectPage() {
+    switch (_currentIndex) {
+      case 0:
+        return _homePage(); // Call your home page widget
+      case 1:
+        return CoursesPage(); // Call your search page widget // Call your profile page widget
+      default:
+        return _homePage();
+    }
   }
 
   Widget _homePage() {
@@ -65,8 +102,6 @@ class _HomePageState extends State<HomePage> {
             margin(width: 0, height: 40),
             _carouselCourses(),
             _certificateSection(),
-            _reviewSection(),
-            _reviewList()
           ],
         ),
       ),
@@ -483,29 +518,6 @@ class _HomePageState extends State<HomePage> {
       style: TextStyle(
         fontSize: 20,
         fontWeight: FontWeight.bold,
-      ),
-    );
-  }
-
-  Widget _reviewList() {
-    return SizedBox(
-      height: 100, // Specify a height for the horizontal list
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal, // Set scroll direction to horizontal
-        itemCount: 10,
-        itemBuilder: (context, index) {
-          return Container(
-            width: 100,
-            margin: const EdgeInsets.all(8.0),
-            color: Colors.blueAccent,
-            child: Center(
-              child: Text(
-                'Item $index',
-                style: const TextStyle(color: Colors.white, fontSize: 18),
-              ),
-            ),
-          );
-        },
       ),
     );
   }
