@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:star_education_center/pages/courses_page.dart';
+import 'package:star_education_center/pages/student_page.dart';
 import 'package:star_education_center/ulti.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 
@@ -37,7 +38,7 @@ class _HomePageState extends State<HomePage> {
               _currentIndex = index; // Update the selected index
             });
           },
-          items: [
+          items: const [
             BottomNavigationBarItem(
               icon: Icon(Icons.home),
               label: 'Home',
@@ -81,7 +82,7 @@ class _HomePageState extends State<HomePage> {
       case 1:
         return CoursesPage(); // Call your search page widget // Call your profile page widget
       default:
-        return _homePage();
+        return StudentPage();
     }
   }
 
