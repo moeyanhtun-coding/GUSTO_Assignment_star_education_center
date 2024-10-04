@@ -19,23 +19,30 @@ class _CoursesPageState extends State<CoursesPage> {
       width: double.infinity,
       height: double.infinity,
       color: const Color.fromARGB(255, 0, 17, 32),
-      child: SingleChildScrollView(
+      child: const SingleChildScrollView(
         child: Column(
           children: [
-            margin(width: 0, height: 30),
-            _header(),
-            margin(width: 0, height: 20),
-            _text2(),
-            margin(width: 0, height: 20),
-            _coursesList()
+            SizedBox(width: 0, height: 30),
+            Header1(),
+            SizedBox(width: 0, height: 20),
+            Header2(),
+            SizedBox(width: 0, height: 30),
+            SearchBar(),
+            SizedBox(width: 0, height: 20),
+            CourseList()
           ],
         ),
       ),
     );
   }
+}
 
-  Widget _header() {
-    return Column(
+class Header1 extends StatelessWidget {
+  const Header1({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Column(
       children: [
         Text(
           "Star Education Center's",
@@ -56,9 +63,14 @@ class _CoursesPageState extends State<CoursesPage> {
       ],
     );
   }
+}
 
-  Widget _text2() {
-    return Column(
+class Header2 extends StatelessWidget {
+  const Header2({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Column(
       children: [
         Text(
           "Above 4,500 students are learning at Star Eductaion",
@@ -75,19 +87,58 @@ class _CoursesPageState extends State<CoursesPage> {
       ],
     );
   }
+}
 
-  Widget _coursesList() {
+class SearchBar extends StatelessWidget {
+  const SearchBar({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Padding(
+      padding: EdgeInsets.symmetric(horizontal: 25),
+      child: TextField(
+        decoration: InputDecoration(
+          hintText: "What are you looking for ?",
+          hintStyle: TextStyle(
+            color: Colors.grey,
+            fontWeight: FontWeight.bold,
+          ),
+          prefixIcon: Icon(
+            Icons.search,
+            color: Colors.blue,
+          ),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.all(
+              Radius.circular(25),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class CourseList extends StatelessWidget {
+  const CourseList({super.key});
+
+  @override
+  Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: Column(
         children: [
-          for (int i = 0; i < 10; i++) _course(),
+          for (int i = 0; i < 10; i++) const Course(),
         ],
       ),
     );
   }
+}
 
-  Widget _course() {
+class Course extends StatelessWidget {
+  const Course({super.key});
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       children: [
         Container(
@@ -97,7 +148,7 @@ class _CoursesPageState extends State<CoursesPage> {
               border: Border.all(
                 color: Colors.blue,
               ),
-              borderRadius: const BorderRadius.all(Radius.circular(18))),
+              borderRadius: const BorderRadius.all(Radius.circular(18),),),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Column(

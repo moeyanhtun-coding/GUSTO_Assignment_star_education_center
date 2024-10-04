@@ -34,10 +34,30 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton:
+          _currentIndex == 2 ? _floatingActionButton() : _nothing(),
       appBar: _buildAppBar(),
       body: _pages[_currentIndex],
-      bottomNavigationBar: _buildBottomNavigationBar(),
+      bottomNavigationBar: SizedBox(
+        height: 80,
+        child: _buildBottomNavigationBar(),
+      ),
     );
+  }
+
+  FloatingActionButton _floatingActionButton() {
+    return FloatingActionButton(
+      onPressed: () {},
+      foregroundColor: Colors.white,
+      backgroundColor: Colors.blue,
+      child: Icon(
+        Icons.person_add,
+      ),
+    );
+  }
+
+  Widget _nothing() {
+    return Container();
   }
 
   AppBar _buildAppBar() {
@@ -306,7 +326,7 @@ class CourseCarousel extends StatelessWidget {
   Widget build(BuildContext context) {
     return CarouselSlider(
       options: CarouselOptions(
-        height: 450,
+        height: 460,
         aspectRatio: 16 / 10,
         viewportFraction: 0.87,
         initialPage: 0,
