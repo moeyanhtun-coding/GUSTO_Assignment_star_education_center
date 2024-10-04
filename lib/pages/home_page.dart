@@ -132,36 +132,6 @@ class HeaderGroup extends StatelessWidget {
   }
 }
 
-class HeaderGroup2 extends StatelessWidget {
-  const HeaderGroup2({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        const Text(
-          "Star Education Center's",
-          style: TextStyle(
-            fontSize: 26,
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        margin(width: 0, height: 4),
-        const Text(
-          "Popular Courses",
-          style: TextStyle(
-            fontSize: 26,
-            color: Colors.blue,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
 class EnrollNowButton extends StatelessWidget {
   const EnrollNowButton({super.key});
 
@@ -193,36 +163,6 @@ class EnrollNowButton extends StatelessWidget {
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class StartLearningButton extends StatelessWidget {
-  const StartLearningButton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 180,
-      height: 50,
-      decoration: const BoxDecoration(boxShadow: [
-        BoxShadow(color: Colors.blue, blurRadius: 25, spreadRadius: 0.2),
-      ]),
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.blue,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        ),
-        onPressed: () {},
-        child: const Text(
-          "Start Learning",
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 20,
-          ),
         ),
       ),
     );
@@ -323,6 +263,36 @@ class TotalCategory extends StatelessWidget {
           name,
           style: const TextStyle(
               color: Colors.white, fontWeight: FontWeight.normal, fontSize: 10),
+        ),
+      ],
+    );
+  }
+}
+
+class HeaderGroup2 extends StatelessWidget {
+  const HeaderGroup2({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Text(
+          "Star Education Center's",
+          style: TextStyle(
+            fontSize: 26,
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        margin(width: 0, height: 4),
+        const Text(
+          "Popular Courses",
+          style: TextStyle(
+            fontSize: 26,
+            color: Colors.blue,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ],
     );
@@ -474,6 +444,36 @@ class CertificateSection extends StatelessWidget {
           }).toList(),
         ),
       ],
+    );
+  }
+}
+
+class StartLearningButton extends StatelessWidget {
+  const StartLearningButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 180,
+      height: 50,
+      decoration: const BoxDecoration(boxShadow: [
+        BoxShadow(color: Colors.blue, blurRadius: 25, spreadRadius: 0.2),
+      ]),
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.blue,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+        onPressed: () {},
+        child: const Text(
+          "Start Learning",
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+          ),
+        ),
+      ),
     );
   }
 }
