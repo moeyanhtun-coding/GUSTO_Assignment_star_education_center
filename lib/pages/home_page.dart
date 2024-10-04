@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:star_education_center/pages/courses_page.dart';
 import 'package:star_education_center/pages/student_page.dart';
 import 'package:star_education_center/ulti.dart';
-import 'package:carousel_slider/carousel_slider.dart';
 
 int _currentIndex = 0;
 
-List<String> text = [
+List<String> certificateText = [
   "Both Physical & Digital Certificates for All Students",
   "Enrolled at Star Education Center! We offer a wide",
   "range of programming and IT-related courses, with",
@@ -25,284 +25,118 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final List<Widget> _pages = [
+    const HomeContent(),
+    const CoursesPage(),
+    const StudentPage(),
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: BottomNavigationBar(
-          selectedItemColor: Colors.blue,
-          unselectedItemColor: Colors.white,
-          backgroundColor: Colors.black,
-          currentIndex: _currentIndex, // Set the current selected index
-          onTap: (index) {
-            setState(() {
-              _currentIndex = index; // Update the selected index
-            });
-          },
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: 'Home',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.add_shopping_cart_sharp),
-              label: 'Courses',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person),
-              label: 'Student',
-            ),
-          ]),
-      appBar: AppBar(
-        backgroundColor: Colors.black,
-        elevation: 10,
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(
-              Icons.search,
-              size: 30,
-              color: Colors.white,
-            ),
-          ),
-          margin(width: 20, height: 0),
-        ],
-        title: const Text(
-          "Home Page",
-          style: TextStyle(color: Colors.white),
-        ),
+      appBar: _buildAppBar(),
+      body: _pages[_currentIndex],
+      bottomNavigationBar: _buildBottomNavigationBar(),
+    );
+  }
+
+  AppBar _buildAppBar() {
+    return AppBar(
+      backgroundColor: Colors.black,
+      title: const Text(
+        "Home Page",
+        style: TextStyle(color: Colors.white),
       ),
-      body: _getSelectPage(),
-    );
-  }
-
-  Widget _getSelectPage() {
-    switch (_currentIndex) {
-      case 0:
-        return _homePage(); // Call your home page widget
-      case 1:
-        return CoursesPage(); // Call your search page widget // Call your profile page widget
-      default:
-        return StudentPage();
-    }
-  }
-
-  Widget _homePage() {
-    return Container(
-      color: const Color.fromARGB(255, 0, 17, 32),
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            margin(width: 0, height: 60),
-            _headerGroup(),
-            margin(width: 0, height: 40),
-            _enrollNow(),
-            _image(),
-            _totalGroup(),
-            margin(width: 0, height: 40),
-            _header2(),
-            margin(width: 0, height: 40),
-            _carouselCourses(),
-            _certificateSection(),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _headerGroup() {
-    return SizedBox(
-      width: double.infinity,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          _header(
-            "Let's Start The Programmer Journey",
-            Colors.white,
-            FontWeight.bold,
-            22,
-          ),
-          margin(width: 0, height: 10),
-          _header(
-            "With Star Education Center",
-            const Color.fromRGBO(33, 150, 243, 1),
-            FontWeight.bold,
-            22,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _header(
-    String text,
-    Color color,
-    FontWeight weight,
-    double size,
-  ) {
-    return Text(
-      text,
-      style: TextStyle(fontWeight: weight, color: color, fontSize: size),
-    );
-  }
-
-  Widget _enrollNow() {
-    return Container(
-      decoration: const BoxDecoration(boxShadow: [
-        BoxShadow(
-          color: Colors.blue,
-          blurRadius: 25,
-          spreadRadius: 0.2,
-          offset: Offset(0, 0),
-        )
-      ]),
-      width: 180,
-      height: 50,
-      child: ElevatedButton(
-        style: ButtonStyle(
-          backgroundColor:
-              WidgetStateProperty.all(Colors.blue), // Blue background
-          shape: WidgetStateProperty.all(
-            RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12), // Rounded corners
-            ),
-          ),
-        ),
-        onPressed: () {},
-        child: const Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Icon(
-              Icons.code,
-              color: Colors.white,
-              size: 25,
-            ), // Icon color white for visibility
-            Text(
-              "Enroll Now",
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ), // Text color white for visibility
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _image() {
-    return SizedBox(
-      height: 300,
-      width: 300,
-      child: SvgPicture.asset(
-        'assets/svgs/programming1.svg',
-      ),
-    );
-  }
-
-  Widget _totalGroup() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
-      child: Container(
-        decoration: BoxDecoration(
-          color: const Color.fromARGB(255, 0, 17, 32),
-          boxShadow: const [
-            BoxShadow(
-              color: Colors.blue,
-              blurRadius: 4,
-            )
-          ],
-          border: Border.all(
-            color: Colors.blue,
-          ),
-          borderRadius: BorderRadius.circular(15),
-        ),
-        height: 100,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Expanded(
-              child: _totalCategory(Icons.person, '+ 2000', 'Students'),
-            ),
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.blue,
-                boxShadow: const [
-                  BoxShadow(
-                    color: Colors.blue,
-                    blurRadius: 4,
-                  )
-                ],
-                border: Border.all(
-                  color: Colors.blue,
-                ),
-                borderRadius: BorderRadius.circular(15),
-              ),
-              width: 1,
-              height: 60,
-            ),
-            Expanded(
-              child: _totalCategory(
-                  Icons.video_collection_rounded, '+ 10', 'Course'),
-            ),
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.blue,
-                boxShadow: const [
-                  BoxShadow(
-                    color: Colors.blue,
-                    blurRadius: 4,
-                  )
-                ],
-                border: Border.all(
-                  color: Colors.blue,
-                ),
-                borderRadius: BorderRadius.circular(15),
-              ),
-              width: 1,
-              height: 60,
-            ),
-            Expanded(
-              child: _totalCategory(
-                  Icons.contact_emergency, '+ 1500', 'Completed'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _totalCategory(IconData icon, String total, String name) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(
-          icon,
-          size: 30,
-          color: Colors.blue,
-        ),
-        margin(width: 0, height: 6),
-        Text(
-          total,
-          style: const TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-            fontSize: 14,
-          ),
-        ),
-        Text(
-          name,
-          style: const TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.normal,
-            fontSize: 10,
-          ),
+      actions: [
+        IconButton(
+          onPressed: () {},
+          icon: const Icon(Icons.search, size: 30, color: Colors.white),
         ),
       ],
     );
   }
 
-  Widget _header2() {
+  BottomNavigationBar _buildBottomNavigationBar() {
+    return BottomNavigationBar(
+      currentIndex: _currentIndex,
+      onTap: (index) {
+        setState(() {
+          _currentIndex = index;
+        });
+      },
+      items: const [
+        BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+        BottomNavigationBarItem(
+            icon: Icon(Icons.add_shopping_cart), label: 'Courses'),
+        BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Student'),
+      ],
+      selectedItemColor: Colors.blue,
+      unselectedItemColor: Colors.white,
+      backgroundColor: Colors.black,
+    );
+  }
+}
+
+class HomeContent extends StatelessWidget {
+  const HomeContent({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: const Color.fromARGB(255, 0, 17, 32),
+      child: const SingleChildScrollView(
+        child: Column(
+          children: [
+            SizedBox(height: 60),
+            HeaderGroup(),
+            SizedBox(height: 50),
+            EnrollNowButton(),
+            PageImage(),
+            SizedBox(height: 50),
+            TotalGroup(),
+            SizedBox(height: 40),
+            HeaderGroup2(),
+            SizedBox(height: 40),
+            CourseCarousel(),
+            CertificateSection(),
+            SizedBox(height: 40),
+            StartLearningButton(),
+            SizedBox(height: 40),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class HeaderGroup extends StatelessWidget {
+  const HeaderGroup({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Column(
+      children: [
+        Text(
+          "Let's Start The Programmer Journey",
+          style: TextStyle(
+              color: Colors.white, fontWeight: FontWeight.bold, fontSize: 22),
+        ),
+        SizedBox(height: 10),
+        Text(
+          "With Star Education Center",
+          style: TextStyle(
+              color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 22),
+        ),
+      ],
+    );
+  }
+}
+
+class HeaderGroup2 extends StatelessWidget {
+  const HeaderGroup2({super.key});
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -326,11 +160,183 @@ class _HomePageState extends State<HomePage> {
       ],
     );
   }
+}
 
-  Widget _carouselCourses() {
+class EnrollNowButton extends StatelessWidget {
+  const EnrollNowButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 180,
+      height: 50,
+      decoration: const BoxDecoration(boxShadow: [
+        BoxShadow(color: Colors.blue, blurRadius: 25, spreadRadius: 0.2),
+      ]),
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.blue,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+        onPressed: () {},
+        child: const Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Icon(Icons.code, color: Colors.white, size: 25),
+            Text(
+              "Enroll Now",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class StartLearningButton extends StatelessWidget {
+  const StartLearningButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 180,
+      height: 50,
+      decoration: const BoxDecoration(boxShadow: [
+        BoxShadow(color: Colors.blue, blurRadius: 25, spreadRadius: 0.2),
+      ]),
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.blue,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+        onPressed: () {},
+        child: const Text(
+          "Start Learning",
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class PageImage extends StatelessWidget {
+  const PageImage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 350,
+      child: SvgPicture.asset('assets/svgs/programming1.svg',
+          width: 300, height: 300),
+    );
+  }
+}
+
+class TotalGroup extends StatelessWidget {
+  const TotalGroup({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 380,
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      decoration: BoxDecoration(
+        color: const Color.fromARGB(255, 0, 17, 32),
+        borderRadius: BorderRadius.circular(15),
+        boxShadow: const [BoxShadow(color: Colors.blue, blurRadius: 4)],
+        border: Border.all(color: Colors.blue),
+      ),
+      height: 100,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          const TotalCategory(
+            icon: Icons.person,
+            total: '+ 2000',
+            name: 'Students',
+          ),
+          Container(
+            height: 70,
+            decoration: BoxDecoration(
+              color: const Color.fromARGB(255, 0, 17, 32),
+              borderRadius: BorderRadius.circular(15),
+              boxShadow: const [BoxShadow(color: Colors.blue, blurRadius: 4)],
+              border: Border.all(color: Colors.blue),
+            ),
+          ),
+          const TotalCategory(
+            icon: Icons.video_collection_rounded,
+            total: '+ 10',
+            name: 'Courses',
+          ),
+          Container(
+            height: 70,
+            decoration: BoxDecoration(
+              color: const Color.fromARGB(255, 0, 17, 32),
+              borderRadius: BorderRadius.circular(15),
+              boxShadow: const [BoxShadow(color: Colors.blue, blurRadius: 4)],
+              border: Border.all(color: Colors.blue),
+            ),
+          ),
+          const TotalCategory(
+            icon: Icons.contact_emergency,
+            total: '+ 1500',
+            name: 'Completed',
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class TotalCategory extends StatelessWidget {
+  final IconData icon;
+  final String total;
+  final String name;
+
+  const TotalCategory(
+      {super.key, required this.icon, required this.total, required this.name});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(icon, size: 30, color: Colors.blue),
+        const SizedBox(height: 6),
+        Text(
+          total,
+          style: const TextStyle(
+              color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
+        ),
+        Text(
+          name,
+          style: const TextStyle(
+              color: Colors.white, fontWeight: FontWeight.normal, fontSize: 10),
+        ),
+      ],
+    );
+  }
+}
+
+class CourseCarousel extends StatelessWidget {
+  const CourseCarousel({super.key});
+
+  @override
+  Widget build(BuildContext context) {
     return CarouselSlider(
       options: CarouselOptions(
-        height: 490,
+        height: 450,
         aspectRatio: 16 / 10,
         viewportFraction: 0.87,
         initialPage: 0,
@@ -356,7 +362,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                   borderRadius: const BorderRadius.all(Radius.circular(18))),
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 15),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -395,9 +401,9 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ],
                     ),
-                    margin(width: 0, height: 20),
+                    margin(width: 0, height: 10),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      padding: const EdgeInsets.symmetric(vertical: 5),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -436,90 +442,38 @@ class _HomePageState extends State<HomePage> {
       }).toList(),
     );
   }
+}
 
-  Widget _certificateSection() {
+class CertificateSection extends StatelessWidget {
+  const CertificateSection({super.key});
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       children: [
-        margin(width: 0, height: 60),
+        const SizedBox(height: 60),
         const Text(
           "Certificate of Completion",
           style: TextStyle(
-            fontSize: 28,
-            fontWeight: FontWeight.bold,
-            color: Colors.blue,
-          ),
+              color: Colors.blue, fontSize: 28, fontWeight: FontWeight.bold),
         ),
-        margin(width: 0, height: 30),
+        const SizedBox(height: 30),
         ClipRRect(
-          borderRadius:
-              BorderRadius.circular(15.0), // Set the border radius here
-          child: Image.asset(
-            'assets/certificate/certificate.jpg',
-            width: 380,
-          ),
+          borderRadius: BorderRadius.circular(15),
+          child: Image.asset('assets/certificate/certificate.jpg', width: 380),
         ),
-        margin(width: 0, height: 20),
+        const SizedBox(height: 20),
         Column(
           crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            for (int i = 0; i < text.length; i++)
-              Text(
-                text[i],
-                style: const TextStyle(
-                    fontSize: 15, height: 1.6, color: Colors.white),
-              ),
-          ],
+          children: certificateText.map((text) {
+            return Text(
+              text,
+              style: const TextStyle(color: Colors.white),
+              textAlign: TextAlign.center,
+            );
+          }).toList(),
         ),
-        margin(width: 0, height: 40),
-        Container(
-          decoration: const BoxDecoration(boxShadow: [
-            BoxShadow(
-              color: Colors.blue,
-              blurRadius: 25,
-              spreadRadius: 0.2,
-              offset: Offset(0, 0),
-            )
-          ]),
-          width: 180,
-          height: 50,
-          child: ElevatedButton(
-            style: ButtonStyle(
-              backgroundColor:
-                  WidgetStateProperty.all(Colors.blue), // Blue background
-              shape: WidgetStateProperty.all(
-                RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12), // Rounded corners
-                ),
-              ),
-            ),
-            onPressed: () {},
-            child: const Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // Icon color white for visibility
-                Text(
-                  "Start Learning",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                  ), // Text color white for visibility
-                ),
-              ],
-            ),
-          ),
-        ),
-        margin(width: 0, height: 40),
       ],
-    );
-  }
-
-  Widget _reviewSection() {
-    return const Text(
-      "Our Students' Reviews",
-      style: TextStyle(
-        fontSize: 20,
-        fontWeight: FontWeight.bold,
-      ),
     );
   }
 }
