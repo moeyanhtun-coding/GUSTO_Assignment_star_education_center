@@ -98,6 +98,13 @@ class SearchBar extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: 25),
       child: TextField(
         decoration: InputDecoration(
+          enabledBorder: OutlineInputBorder(
+            borderSide:
+                BorderSide(color: Colors.blue), // Change to your desired color
+            borderRadius: BorderRadius.all(
+              Radius.circular(25),
+            ),
+          ),
           hintText: "What are you looking for ?",
           hintStyle: TextStyle(
             color: Colors.grey,
@@ -145,10 +152,13 @@ class Course extends StatelessWidget {
           width: MediaQuery.of(context).size.width,
           margin: const EdgeInsets.symmetric(horizontal: 5.0),
           decoration: BoxDecoration(
-              border: Border.all(
-                color: Colors.blue,
-              ),
-              borderRadius: const BorderRadius.all(Radius.circular(18),),),
+            border: Border.all(
+              color: Colors.blue,
+            ),
+            borderRadius: const BorderRadius.all(
+              Radius.circular(18),
+            ),
+          ),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Column(

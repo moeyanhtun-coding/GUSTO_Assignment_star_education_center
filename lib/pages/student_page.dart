@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:star_education_center/pages/home_page.dart';
 
 class StudentPage extends StatelessWidget {
   const StudentPage({super.key});
@@ -57,10 +59,41 @@ class StudentList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        for (int i = 0; i < 10; i++) Student(),
-      ],
+    return StreamBuilder<QuerySnapshot>(
+      stream: firestoreService.getStudents(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          // Specify the type of the list explicitly
+          List<DocumentSnapshot> studentLists = snapshot.data!.docs;
+
+          return ListView.builder(
+            itemCount: studentLists.length,
+            itemBuilder: (context, index) {
+              // Get individual doc
+              DocumentSnapshot document = studentLists[index];
+              String docID = document.id;
+
+              // Get student data from each document
+              Map<String, dynamic> data =
+                  document.data() as Map<String, dynamic>;
+
+              // Fix the field name, assuming it's `name`
+              String studentName =
+                  data['name'] ?? "No Name"; // Use a default value if null
+
+              // Display as list
+              return ListTile(
+                title: Text(studentName),
+              );
+            },
+          );
+        } else {
+          return const Text(
+            "There are no Students",
+            style: TextStyle(color: Colors.blue),
+          );
+        }
+      },
     );
   }
 }
@@ -79,7 +112,13 @@ class Student extends StatelessWidget {
           borderRadius: BorderRadius.circular(20),
         ),
         child: Row(
-          children: [],
+          children: [
+            // Add content here like student name or details
+            Text(
+              'Student Details',
+              style: TextStyle(color: Colors.blue),
+            ),
+          ],
         ),
       ),
     );

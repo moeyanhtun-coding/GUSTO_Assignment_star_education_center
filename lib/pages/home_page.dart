@@ -1,11 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get/route_manager.dart';
+import 'package:star_education_center/models/student_model.dart';
 import 'package:star_education_center/pages/courses_page.dart';
 import 'package:star_education_center/pages/student_page.dart';
+import 'package:star_education_center/services/firestore_service.dart';
 import 'package:star_education_center/ulti.dart';
+import 'package:uuid/uuid.dart';
 
+String email = "";
+String phone = "";
+String name = "";
+String date = "";
 int _currentIndex = 0;
+
+final FirestoreService firestoreService = FirestoreService();
+final Uuid uuid = Uuid();
 
 List<String> certificateText = [
   "Both Physical & Digital Certificates for All Students",
@@ -31,27 +42,114 @@ class _HomePageState extends State<HomePage> {
     const StudentPage(),
   ];
 
+  TextEditingController _nameController = TextEditingController();
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _phoneController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
+    void newStudent() {
+      showDialog(
+        context: context,
+        builder: (context) => Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Container(
+            width: double.infinity,
+            height: 400,
+            padding: EdgeInsets.all(20),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                TextField(
+                  controller: _nameController,
+                  decoration: InputDecoration(
+                    label: Text("Name"),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                  ),
+                ),
+                margin(width: 0, height: 20),
+                TextField(
+                  controller: _emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: InputDecoration(
+                    label: Text("Email"),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                  ),
+                ),
+                margin(width: 0, height: 20),
+                TextField(
+                  controller: _phoneController,
+                  keyboardType: TextInputType.phone,
+                  decoration: InputDecoration(
+                    label: Text("Phone"),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                  ),
+                ),
+                margin(width: 0, height: 20),
+                DateOfBirthPicker(),
+                margin(width: 0, height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    name = _nameController.text;
+                    phone = _phoneController.text;
+                    email = _emailController.text;
+                    date = _dateController.text;
+                    String studentId = uuid.v4();
+                    firestoreService.registerStudent(
+                        NewStudent(studentId, name, email, phone, date));
+
+                    _nameController.clear();
+                    _phoneController.clear();
+                    _emailController.clear();
+                    _dateController.clear();
+
+                    Navigator.pop(context);
+                  },
+                  child: Text(
+                    "Create",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  style: ButtonStyle(
+                    backgroundColor: WidgetStateProperty.all(Colors.blue),
+                    shape: WidgetStateProperty.all(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+                )
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
-      floatingActionButton:
-          _currentIndex == 2 ? _floatingActionButton() : _nothing(),
+      floatingActionButton: _currentIndex == 2
+          ? FloatingActionButton(
+              onPressed: newStudent,
+              foregroundColor: Colors.white,
+              backgroundColor: Colors.blue,
+              child: Icon(
+                Icons.person_add,
+              ),
+            )
+          : _nothing(),
       appBar: _buildAppBar(),
       body: _pages[_currentIndex],
       bottomNavigationBar: SizedBox(
         height: 80,
         child: _buildBottomNavigationBar(),
-      ),
-    );
-  }
-
-  FloatingActionButton _floatingActionButton() {
-    return FloatingActionButton(
-      onPressed: () {},
-      foregroundColor: Colors.white,
-      backgroundColor: Colors.blue,
-      child: Icon(
-        Icons.person_add,
       ),
     );
   }
@@ -494,6 +592,45 @@ class StartLearningButton extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+TextEditingController _dateController = TextEditingController();
+
+class DateOfBirthPicker extends StatefulWidget {
+  @override
+  _DateOfBirthPickerState createState() => _DateOfBirthPickerState();
+}
+
+class _DateOfBirthPickerState extends State<DateOfBirthPicker> {
+  Future<void> _selectDate(BuildContext context) async {
+    DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(), // Default date when the picker is shown
+      firstDate: DateTime(1900), // Earliest date that can be picked
+      lastDate: DateTime.now(), // Latest date that can be picked
+    );
+    if (picked != null) {
+      setState(() {
+        _dateController.text =
+            "${picked.toLocal()}".split(' ')[0]; // Format date
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      controller: _dateController,
+      decoration: InputDecoration(
+        label: Text("Start Date"),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
+        ),
+      ),
+      readOnly: true, // Makes sure the keyboard doesn't appear
+      onTap: () => _selectDate(context), // Opens the date picker on tap
     );
   }
 }

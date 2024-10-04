@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:724916962148:android:06c07df98748d63112f071",
+        "mobilesdk_app_id": "1:724916962148:android:e1918ef2ccfbb62312f071",
         "android_client_info": {
-          "package_name": "com.gustoassignmentstareducationcenter.app"
+          "package_name": "com.example.star_education_center"
         }
       },
       "oauth_client": [],
