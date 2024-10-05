@@ -332,7 +332,7 @@ class Student extends StatelessWidget {
                   IconButton(
                       onPressed: () {},
                       icon: const Icon(
-                        Icons.account_circle_rounded,
+                        Icons.edit_document,
                         color: Colors.blue,
                         size: 30,
                       ))
