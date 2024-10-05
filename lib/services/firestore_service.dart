@@ -22,12 +22,11 @@ class FirestoreService {
     });
   }
 
+// search function
   Stream<QuerySnapshot> searchStudentsByName(String searchQuery) {
-    String searchLower = searchQuery.toLowerCase();
-
     final studentStream = students
-        .where('name', isGreaterThanOrEqualTo: searchLower)
-        .where('name', isLessThanOrEqualTo: searchLower + '\uf8ff')
+        .where('name', isGreaterThanOrEqualTo: searchQuery)
+        .where('name', isLessThanOrEqualTo: searchQuery + '\uf8ff')
         .orderBy('name') // Order results by name
         .snapshots();
 
@@ -40,5 +39,14 @@ class FirestoreService {
     final studentStream =
         students.orderBy('timeStep', descending: true).snapshots();
     return studentStream;
+  }
+
+// delete function
+  Future<void> deleteStudent(String documentId) {
+    return students.doc(documentId).delete().then((_) {
+      log("Student with ID: $documentId deleted");
+    }).catchError((error) {
+      log("Failed to delete student: $error");
+    });
   }
 }

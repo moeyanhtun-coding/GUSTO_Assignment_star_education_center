@@ -29,7 +29,7 @@ class _StudentPageState extends State<StudentPage> {
             SearchBar(
               onChanged: (value) {
                 setState(() {
-                  searchString = value.toLowerCase(); // Update search query
+                  searchString = value; // Update search query
                 });
               },
             ),
@@ -138,8 +138,10 @@ class StudentList extends StatelessWidget {
 
               String studentName = data['name'] ?? 'No Name';
               String studentEmail = data['email'] ?? 'No Email';
+              String documentId = document.id;
 
               return Student(
+                documentId: documentId,
                 name: studentName,
                 email: studentEmail,
               );
@@ -164,11 +166,13 @@ class StudentList extends StatelessWidget {
 class Student extends StatelessWidget {
   final String name;
   final String email;
+  final String documentId;
 
   const Student({
     super.key,
     required this.name,
     required this.email,
+    required this.documentId,
   });
 
   @override
@@ -211,7 +215,114 @@ class Student extends StatelessWidget {
               Row(
                 children: [
                   IconButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) => Dialog(
+                          child: Padding(
+                            padding: const EdgeInsets.all(20.0),
+                            child: Container(
+                              width: 400,
+                              height: 120,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Text(
+                                        "Are you sure want to Delete ? ",
+                                        style: TextStyle(fontSize: 19),
+                                      ),
+                                      Icon(
+                                        Icons.dangerous,
+                                        color: Colors.redAccent,
+                                        size: 30,
+                                      )
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: 20,
+                                  ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      ElevatedButton(
+                                        style: ButtonStyle(
+                                          shape: WidgetStateProperty.all(
+                                            RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.all(
+                                                Radius.circular(
+                                                  10,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          backgroundColor:
+                                              WidgetStateProperty.all(
+                                            Colors.blue,
+                                          ),
+                                        ),
+                                        onPressed: () {
+                                          firestoreService
+                                              .deleteStudent(documentId);
+
+                                          Navigator.pop(context);
+                                        },
+                                        child: const SizedBox(
+                                          width: 50,
+                                          child: Center(
+                                            child: Text(
+                                              "Yes",
+                                              style: TextStyle(
+                                                fontSize: 15,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      ElevatedButton(
+                                        style: ButtonStyle(
+                                          shape: WidgetStateProperty.all(
+                                            RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.all(
+                                                Radius.circular(
+                                                  10,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          backgroundColor:
+                                              WidgetStateProperty.all(
+                                            Colors.redAccent,
+                                          ),
+                                        ),
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                        child: Container(
+                                          width: 50,
+                                          child: Center(
+                                            child: Text(
+                                              "No",
+                                              style: TextStyle(
+                                                fontSize: 15,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      )
+                                    ],
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
                     icon: const Icon(
                       Icons.delete,
                       size: 30,
