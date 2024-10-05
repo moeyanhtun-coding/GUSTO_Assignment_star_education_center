@@ -49,4 +49,19 @@ class FirestoreService {
       log("Failed to delete student: $error");
     });
   }
+
+  // update function
+  Future<void> updateStudent(String documentId, StudentModel student) {
+    return students.doc(documentId).update({
+      'name': student.name,
+      'email': student.email,
+      'phone': student.phone,
+      'section': student.section,
+      'timeStep': Timestamp.now() // Update timestamp
+    }).then((_) {
+      log("Student with ID: $documentId updated");
+    }).catchError((error) {
+      log("Failed to update student: $error");
+    });
+  }
 }

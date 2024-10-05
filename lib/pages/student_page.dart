@@ -1,8 +1,11 @@
 import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:get/route_manager.dart';
+import 'package:star_education_center/models/student_model.dart';
 import 'package:star_education_center/pages/home_page.dart';
+import 'package:star_education_center/pages/student_detail_page.dart';
+import 'package:star_education_center/ulti.dart';
 
 class StudentPage extends StatefulWidget {
   const StudentPage({super.key});
@@ -12,6 +15,133 @@ class StudentPage extends StatefulWidget {
 }
 
 class _StudentPageState extends State<StudentPage> {
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _phoneController = TextEditingController();
+  final _dateController = TextEditingController();
+
+  void updateStudent(String documentId, String studentId) {
+    // Clear the controllers before opening the dialog
+    _nameController.clear();
+    _emailController.clear();
+    _phoneController.clear();
+    _dateController.clear();
+
+    // Open dialog
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Container(
+          width: double.infinity,
+          height: 400,
+          padding: EdgeInsets.all(20),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              TextField(
+                controller: _nameController,
+                decoration: InputDecoration(
+                  label: const Text("Name"),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20), // Updated margin method
+              TextField(
+                controller: _emailController,
+                keyboardType: TextInputType.emailAddress,
+                decoration: InputDecoration(
+                  label: const Text("Email"),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              TextField(
+                controller: _phoneController,
+                keyboardType: TextInputType.phone,
+                decoration: InputDecoration(
+                  label: const Text("Phone"),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              TextField(
+                controller: _dateController,
+                readOnly: true,
+                decoration: InputDecoration(
+                  label: const Text("Date of Birth"),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                ),
+                onTap: () async {
+                  DateTime? pickedDate = await showDatePicker(
+                    context: context,
+                    initialDate: DateTime.now(),
+                    firstDate: DateTime(1900), // Limit the first date
+                    lastDate: DateTime.now(),
+                  );
+
+                  if (pickedDate != null) {
+                    String formattedDate =
+                        "${pickedDate.toLocal()}".split(' ')[0]; // Format date
+                    _dateController.text =
+                        formattedDate; // Set the date in the controller
+                  }
+                },
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  String name = _nameController.text;
+                  String email = _emailController.text;
+                  String phone = _phoneController.text;
+                  String date = _dateController.text;
+
+                  // Update the student details
+                  firestoreService.updateStudent(
+                    documentId, // Pass the documentId of the student
+                    StudentModel(studentId, name, email, phone,
+                        date), // Pass the updated StudentModel
+                  );
+
+                  // Clear the text fields
+                  _nameController.clear();
+                  _phoneController.clear();
+                  _emailController.clear();
+                  _dateController.clear();
+
+                  Navigator.pop(context); // Close the dialog
+                },
+                style: ButtonStyle(
+                  backgroundColor: WidgetStateProperty.all(Colors.blue),
+                  shape: WidgetStateProperty.all(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+                child: const Text(
+                  "Update",
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   String searchString = ''; // To store search query
 
   @override
@@ -35,7 +165,9 @@ class _StudentPageState extends State<StudentPage> {
             ),
             const SizedBox(height: 20),
             StudentList(
-              searchString: searchString, // Pass search query to StudentList
+              searchString: searchString,
+              updateStudent:
+                  updateStudent, // Pass the updateStudent function here
             ),
           ],
         ),
@@ -105,8 +237,11 @@ class Header extends StatelessWidget {
 
 class StudentList extends StatelessWidget {
   final String searchString;
+  final Function(String, String)
+      updateStudent; // Define the updateStudent function type
 
-  const StudentList({super.key, required this.searchString});
+  const StudentList(
+      {super.key, required this.searchString, required this.updateStudent});
 
   @override
   Widget build(BuildContext context) {
@@ -139,12 +274,19 @@ class StudentList extends StatelessWidget {
               String studentName = data['name'] ?? 'No Name';
               String studentEmail = data['email'] ?? 'No Email';
               String documentId = document.id;
+              String studentId = data['sId'];
+              String studentPhone = data['phone'] ?? 'No Phone';
+              String section = data['section'] ?? 'No Phone';
 
               return Student(
-                documentId: documentId,
-                name: studentName,
-                email: studentEmail,
-              );
+                  studentId: studentId,
+                  documentId: documentId,
+                  name: studentName,
+                  email: studentEmail,
+                  updateStudent: updateStudent,
+                  phone: studentPhone,
+                  section: section // Pass the function to the Student
+                  );
             },
           );
         } else if (snapshot.hasError) {
@@ -167,179 +309,203 @@ class Student extends StatelessWidget {
   final String name;
   final String email;
   final String documentId;
+  final String studentId;
+  final String section;
+  final Function(String, String)
+      updateStudent; // Correctly define the updateStudent function type
+  final String phone;
 
   const Student({
     super.key,
     required this.name,
     required this.email,
     required this.documentId,
+    required this.studentId,
+    required this.updateStudent,
+    required this.phone,
+    required this.section,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      child: Container(
-        height: 80,
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.blue),
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    name,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 17,
-                      fontWeight: FontWeight.bold,
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => StudentDetailsPage(
+              name: name,
+              email: email,
+              studentId: studentId,
+              phone: phone,
+              section: section,
+            ),
+          ),
+        );
+        log(name);
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        child: Container(
+          height: 80,
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.blue),
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      name,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 17,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                  Text(
-                    email,
-                    style: const TextStyle(
-                      color: Colors.grey,
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
+                    Text(
+                      email,
+                      style: const TextStyle(
+                        color: Colors.grey,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  IconButton(
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) => Dialog(
-                          child: Padding(
-                            padding: const EdgeInsets.all(20.0),
-                            child: Container(
-                              width: 400,
-                              height: 120,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Text(
-                                        "Are you sure want to Delete ? ",
-                                        style: TextStyle(fontSize: 19),
-                                      ),
-                                      Icon(
-                                        Icons.dangerous,
-                                        color: Colors.redAccent,
-                                        size: 30,
-                                      )
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    height: 20,
-                                  ),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      ElevatedButton(
-                                        style: ButtonStyle(
-                                          shape: WidgetStateProperty.all(
-                                            RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.all(
-                                                Radius.circular(
-                                                  10,
+                  ],
+                ),
+                Row(
+                  children: [
+                    IconButton(
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) => Dialog(
+                            child: Padding(
+                              padding: const EdgeInsets.all(20.0),
+                              child: SizedBox(
+                                width: 400,
+                                height: 120,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Row(
+                                      children: [
+                                        Text(
+                                          "Are you sure want to Delete?",
+                                          style: TextStyle(fontSize: 19),
+                                        ),
+                                        Icon(
+                                          Icons.dangerous,
+                                          color: Colors.redAccent,
+                                          size: 30,
+                                        )
+                                      ],
+                                    ),
+                                    const SizedBox(
+                                      height: 20,
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        ElevatedButton(
+                                          style: ButtonStyle(
+                                            shape: WidgetStateProperty.all(
+                                              const RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.all(
+                                                  Radius.circular(10),
+                                                ),
+                                              ),
+                                            ),
+                                            backgroundColor:
+                                                WidgetStateProperty.all(
+                                              Colors.blue,
+                                            ),
+                                          ),
+                                          onPressed: () {
+                                            firestoreService
+                                                .deleteStudent(documentId);
+                                            Navigator.pop(context);
+                                          },
+                                          child: const SizedBox(
+                                            width: 50,
+                                            child: Center(
+                                              child: Text(
+                                                "Yes",
+                                                style: TextStyle(
+                                                  fontSize: 15,
+                                                  color: Colors.white,
                                                 ),
                                               ),
                                             ),
                                           ),
-                                          backgroundColor:
-                                              WidgetStateProperty.all(
-                                            Colors.blue,
-                                          ),
                                         ),
-                                        onPressed: () {
-                                          firestoreService
-                                              .deleteStudent(documentId);
-
-                                          Navigator.pop(context);
-                                        },
-                                        child: const SizedBox(
-                                          width: 50,
-                                          child: Center(
-                                            child: Text(
-                                              "Yes",
-                                              style: TextStyle(
-                                                fontSize: 15,
-                                                color: Colors.white,
+                                        ElevatedButton(
+                                          style: ButtonStyle(
+                                            shape: WidgetStateProperty.all(
+                                              const RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.all(
+                                                  Radius.circular(10),
+                                                ),
                                               ),
                                             ),
+                                            backgroundColor:
+                                                WidgetStateProperty.all(
+                                              Colors.redAccent,
+                                            ),
                                           ),
-                                        ),
-                                      ),
-                                      ElevatedButton(
-                                        style: ButtonStyle(
-                                          shape: WidgetStateProperty.all(
-                                            RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.all(
-                                                Radius.circular(
-                                                  10,
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                          },
+                                          child: const SizedBox(
+                                            width: 50,
+                                            child: Center(
+                                              child: Text(
+                                                "No",
+                                                style: TextStyle(
+                                                  fontSize: 15,
+                                                  color: Colors.white,
                                                 ),
                                               ),
                                             ),
                                           ),
-                                          backgroundColor:
-                                              WidgetStateProperty.all(
-                                            Colors.redAccent,
-                                          ),
-                                        ),
-                                        onPressed: () {
-                                          Navigator.pop(context);
-                                        },
-                                        child: Container(
-                                          width: 50,
-                                          child: Center(
-                                            child: Text(
-                                              "No",
-                                              style: TextStyle(
-                                                fontSize: 15,
-                                                color: Colors.white,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      )
-                                    ],
-                                  )
-                                ],
+                                        )
+                                      ],
+                                    )
+                                  ],
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      );
-                    },
-                    icon: const Icon(
-                      Icons.delete,
-                      size: 30,
-                      color: Colors.redAccent,
+                        );
+                      },
+                      icon: const Icon(
+                        Icons.delete,
+                        size: 30,
+                        color: Colors.redAccent,
+                      ),
                     ),
-                  ),
-                  IconButton(
-                    onPressed: () {},
-                    icon: const Icon(
-                      Icons.edit_document,
-                      color: Colors.blue,
-                      size: 30,
-                    ),
-                  )
-                ],
-              ),
-            ],
+                    IconButton(
+                      onPressed: () {
+                        // Call updateStudent when edit button is pressed
+                        updateStudent(documentId, studentId);
+                      },
+                      icon: const Icon(
+                        Icons.edit,
+                        color: Colors.blue,
+                        size: 30,
+                      ),
+                    )
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

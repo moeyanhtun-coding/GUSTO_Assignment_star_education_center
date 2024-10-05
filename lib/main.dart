@@ -5,6 +5,7 @@ import 'package:star_education_center/firebase_options.dart';
 import 'package:star_education_center/pages/home_page.dart';
 import 'package:star_education_center/pages/login_page.dart';
 import 'package:star_education_center/pages/register_page.dart';
+import 'package:star_education_center/pages/student_detail_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,7 +19,7 @@ void main() async {
 final routes = [
   GetPage(name: '/login', page: () => LoginPage()),
   GetPage(name: '/register', page: () => RegisterPage()),
-  GetPage(name: '/home', page: () => const HomePage())
+  GetPage(name: '/home', page: () => const HomePage()),
 ];
 
 class MyApp extends StatelessWidget {
