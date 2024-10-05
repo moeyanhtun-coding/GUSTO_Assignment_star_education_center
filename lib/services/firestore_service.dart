@@ -22,11 +22,23 @@ class FirestoreService {
     });
   }
 
+  Stream<QuerySnapshot> searchStudentsByName(String searchQuery) {
+    String searchLower = searchQuery.toLowerCase();
+
+    final studentStream = students
+        .where('name', isGreaterThanOrEqualTo: searchLower)
+        .where('name', isLessThanOrEqualTo: searchLower + '\uf8ff')
+        .orderBy('name') // Order results by name
+        .snapshots();
+
+    log('Search Query: $searchQuery, Data: ${studentStream.toString()}');
+    return studentStream;
+  }
+
   // read Student
   Stream<QuerySnapshot> getStudents() {
     final studentStream =
         students.orderBy('timeStep', descending: true).snapshots();
-    log(studentStream.first.toString());
     return studentStream;
   }
 }

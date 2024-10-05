@@ -97,6 +97,7 @@ class SearchBar extends StatelessWidget {
     return const Padding(
       padding: EdgeInsets.symmetric(horizontal: 25),
       child: TextField(
+        style: TextStyle(color: Colors.white),
         decoration: InputDecoration(
           enabledBorder: OutlineInputBorder(
             borderSide:
