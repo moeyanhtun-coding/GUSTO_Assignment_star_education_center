@@ -330,12 +330,13 @@ class Student extends StatelessWidget {
                     ),
                   ),
                   IconButton(
-                      onPressed: () {},
-                      icon: const Icon(
-                        Icons.edit_document,
-                        color: Colors.blue,
-                        size: 30,
-                      ))
+                    onPressed: () {},
+                    icon: const Icon(
+                      Icons.edit_document,
+                      color: Colors.blue,
+                      size: 30,
+                    ),
+                  )
                 ],
               ),
             ],
