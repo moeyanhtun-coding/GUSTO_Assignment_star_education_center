@@ -1,11 +1,9 @@
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:get/route_manager.dart';
 import 'package:star_education_center/models/student_model.dart';
 import 'package:star_education_center/pages/home_page.dart';
 import 'package:star_education_center/pages/student_detail_page.dart';
-import 'package:star_education_center/ulti.dart';
 
 class StudentPage extends StatefulWidget {
   const StudentPage({super.key});
@@ -287,7 +285,7 @@ class StudentList extends StatelessWidget {
                 updateStudent: updateStudent,
                 phone: studentPhone,
                 section: section,
-                courseId: [], // Pass the function to the Student
+                courseId: const [], // Pass the function to the Student
               );
             },
           );
