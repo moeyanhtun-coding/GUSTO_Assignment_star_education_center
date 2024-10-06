@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:star_education_center/pages/courses_add_page.dart';
 import 'package:star_education_center/ulti.dart';
 
 class StudentDetailsPage extends StatelessWidget {
@@ -107,7 +108,7 @@ class StudentDetailsPage extends StatelessWidget {
                 margin(width: 0, height: 30),
                 _enrolled(),
                 margin(width: 0, height: 30),
-                Center(child: _newEnroll())
+                Center(child: _newEnroll(context))
               ],
             ),
           ),
@@ -122,11 +123,11 @@ class StudentDetailsPage extends StatelessWidget {
       children: [
         Text(
           title,
-          style: TextStyle(fontSize: 11),
+          style: const TextStyle(fontSize: 11),
         ),
         Text(
           about,
-          style: TextStyle(fontSize: 15),
+          style: const TextStyle(fontSize: 15),
         ),
       ],
     );
@@ -153,7 +154,7 @@ class StudentDetailsPage extends StatelessWidget {
     );
   }
 
-  Widget _newEnroll() {
+  Widget _newEnroll(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(boxShadow: [
         BoxShadow(color: Colors.blue, blurRadius: 25, spreadRadius: 0.2),
@@ -161,7 +162,16 @@ class StudentDetailsPage extends StatelessWidget {
       width: 140,
       height: 50,
       child: ElevatedButton(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => CoursesAddPage(
+                  name: name,
+                ),
+              ),
+            );
+          },
           style: ButtonStyle(
             backgroundColor: const WidgetStatePropertyAll(Colors.blue),
             foregroundColor: const WidgetStatePropertyAll(Colors.white),
