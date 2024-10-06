@@ -1,5 +1,14 @@
+import 'dart:developer';
+import 'dart:ffi';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:star_education_center/pages/home_page.dart';
+import 'package:star_education_center/services/course_firestore_service.dart';
 import 'package:star_education_center/ulti.dart';
+
+final CourseFirestoreService courses = CourseFirestoreService();
 
 class CoursesPage extends StatefulWidget {
   const CoursesPage({super.key});
@@ -131,19 +140,59 @@ class CourseList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(20.0),
-      child: Column(
-        children: [
-          for (int i = 0; i < 10; i++) const Course(),
-        ],
-      ),
+    return StreamBuilder<QuerySnapshot>(
+      stream: courses.getCourses(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          List<DocumentSnapshot> coursesList = snapshot.data!.docs;
+
+          if (coursesList.isEmpty) {
+            return const Center(
+              child: Text(
+                'No students found',
+                style: TextStyle(color: Colors.red),
+              ),
+            );
+          }
+
+          return ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: coursesList.length,
+            itemBuilder: (context, index) {
+              DocumentSnapshot document = coursesList[index];
+              Map<String, dynamic> data =
+                  document.data() as Map<String, dynamic>;
+
+              String courseName = data['courseName'] ?? 'No Name';
+              double courseFess = data['fees'] ?? 'No Email';
+
+              return Course(
+                courseName: courseName,
+                fees: courseFess,
+              );
+            },
+          );
+        } else if (snapshot.hasError) {
+          log('Error: ${snapshot.error.toString()}');
+          return const Center(
+            child: Text('Error loading students',
+                style: TextStyle(color: Colors.red)),
+          );
+        } else {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+      },
     );
   }
 }
 
 class Course extends StatelessWidget {
-  const Course({super.key});
+  String courseName;
+  double fees;
+  Course({super.key, required this.courseName, required this.fees});
 
   @override
   Widget build(BuildContext context) {
@@ -172,33 +221,13 @@ class Course extends StatelessWidget {
                   child: Image.asset('assets/courses/JS.png'),
                 ),
                 margin(width: 0, height: 10),
-                const Text(
-                  "Programming Basic With JavaScript",
+                Text(
+                  courseName,
                   textAlign: TextAlign.start,
-                  style: TextStyle(
+                  style: const TextStyle(
                       color: Colors.white,
                       fontSize: 19,
                       fontWeight: FontWeight.bold),
-                ),
-                margin(width: 0, height: 6),
-                Row(
-                  children: [
-                    const Text(
-                      "Chapters - 6",
-                      style: TextStyle(
-                        color: Colors.white70,
-                        fontSize: 14,
-                      ),
-                    ),
-                    margin(width: 30, height: 0),
-                    const Text(
-                      "Lessons - 20",
-                      style: TextStyle(
-                        color: Colors.white70,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ],
                 ),
                 margin(width: 0, height: 20),
                 Padding(
@@ -206,9 +235,9 @@ class Course extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
-                        "Fees - 5000,000 MMK",
-                        style: TextStyle(
+                      Text(
+                        "Fees - ${NumberFormat('#,###').format(fees)} MMK",
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 18,
                         ),
