@@ -6,14 +6,11 @@ class StudentModel {
   String email;
   String phone;
   String section;
+  List<String> courseId;
 
-  StudentModel(
-    String? sId,
-    this.name,
-    this.email,
-    this.phone,
-    this.section,
-  ) : _sId = sId ?? Uuid().v4();
+  StudentModel(String? sId, this.name, this.email, this.phone, this.section,
+      this.courseId)
+      : _sId = sId ?? Uuid().v4();
 
   String get studentId => _sId;
 }
@@ -27,6 +24,7 @@ class NewStudent extends StudentModel {
     super.email,
     super.phone,
     super.section,
+    super.courseId,
   );
 }
 
@@ -39,6 +37,7 @@ class PremiumStudent extends StudentModel {
     super.email,
     super.phone,
     super.section,
+    super.courseId,
   );
 }
 
@@ -51,5 +50,6 @@ class PlatinumStudent extends StudentModel {
     super.email,
     super.phone,
     super.section,
+    super.courseId,
   );
 }
