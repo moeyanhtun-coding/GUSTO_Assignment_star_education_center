@@ -149,7 +149,7 @@ class CourseList extends StatelessWidget {
           if (coursesList.isEmpty) {
             return const Center(
               child: Text(
-                'No students found',
+                'No Courses found',
                 style: TextStyle(color: Colors.red),
               ),
             );
@@ -165,11 +165,11 @@ class CourseList extends StatelessWidget {
                   document.data() as Map<String, dynamic>;
 
               String courseName = data['courseName'] ?? 'No Name';
-              double courseFess = data['fees'] ?? 'No Email';
+              double courseFees = data['fees'] ?? 'No Email';
 
               return Course(
                 courseName: courseName,
-                fees: courseFess,
+                fees: courseFees,
               );
             },
           );
