@@ -106,12 +106,13 @@ class _StudentPageState extends State<StudentPage> {
                   String email = _emailController.text;
                   String phone = _phoneController.text;
                   String date = _dateController.text;
+                  List<String> courseId = [];
 
                   // Update the student details
                   firestoreService.updateStudent(
                     documentId, // Pass the documentId of the student
-                    StudentModel(studentId, name, email, phone,
-                        date), // Pass the updated StudentModel
+                    StudentModel(studentId, name, email, phone, date,
+                        courseId), // Pass the updated StudentModel
                   );
 
                   // Clear the text fields
@@ -279,14 +280,15 @@ class StudentList extends StatelessWidget {
               String section = data['section'] ?? 'No Phone';
 
               return Student(
-                  studentId: studentId,
-                  documentId: documentId,
-                  name: studentName,
-                  email: studentEmail,
-                  updateStudent: updateStudent,
-                  phone: studentPhone,
-                  section: section // Pass the function to the Student
-                  );
+                studentId: studentId,
+                documentId: documentId,
+                name: studentName,
+                email: studentEmail,
+                updateStudent: updateStudent,
+                phone: studentPhone,
+                section: section,
+                courseId: [], // Pass the function to the Student
+              );
             },
           );
         } else if (snapshot.hasError) {
@@ -311,6 +313,7 @@ class Student extends StatelessWidget {
   final String documentId;
   final String studentId;
   final String section;
+  final List<String> courseId;
   final Function(String, String)
       updateStudent; // Correctly define the updateStudent function type
   final String phone;
@@ -324,6 +327,7 @@ class Student extends StatelessWidget {
     required this.updateStudent,
     required this.phone,
     required this.section,
+    required this.courseId,
   });
 
   @override
