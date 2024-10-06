@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:star_education_center/ulti.dart';
 
@@ -11,13 +10,13 @@ class StudentDetailsPage extends StatelessWidget {
   final String section;
 
   const StudentDetailsPage({
-    Key? key,
+    super.key,
     required this.name,
     required this.email,
     required this.studentId,
     required this.phone,
     required this.section,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -25,14 +24,14 @@ class StudentDetailsPage extends StatelessWidget {
       appBar: AppBar(
         foregroundColor: Colors.white,
         backgroundColor: Colors.black,
-        title: Text(
+        title: const Text(
           "Student Details",
         ),
       ),
       body: Container(
         height: double.infinity,
         width: double.infinity,
-        color: Color.fromARGB(255, 0, 17, 32),
+        color: const Color.fromARGB(255, 0, 17, 32),
         child: Padding(
           padding: const EdgeInsets.all(10.0),
           child: SingleChildScrollView(
@@ -43,7 +42,7 @@ class StudentDetailsPage extends StatelessWidget {
                 Center(
                   child: Column(
                     children: [
-                      Text(
+                      const Text(
                         "Star Education Center's",
                         style: TextStyle(
                           color: Colors.white,
@@ -52,7 +51,7 @@ class StudentDetailsPage extends StatelessWidget {
                         ),
                       ),
                       margin(width: 0, height: 10),
-                      Text(
+                      const Text(
                         "Student",
                         style: TextStyle(
                           color: Colors.blue,
@@ -79,7 +78,7 @@ class StudentDetailsPage extends StatelessWidget {
                         children: [
                           Column(
                             children: [
-                              Text(
+                              const Text(
                                 "Star Education Center",
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold, fontSize: 15),
@@ -107,7 +106,7 @@ class StudentDetailsPage extends StatelessWidget {
                 ),
                 margin(width: 0, height: 30),
                 _enrolled(),
-                margin(width: 0, height: 60),
+                margin(width: 0, height: 30),
                 Center(child: _newEnroll())
               ],
             ),
@@ -164,13 +163,13 @@ class StudentDetailsPage extends StatelessWidget {
       child: ElevatedButton(
           onPressed: () {},
           style: ButtonStyle(
-            backgroundColor: WidgetStatePropertyAll(Colors.blue),
-            foregroundColor: WidgetStatePropertyAll(Colors.white),
+            backgroundColor: const WidgetStatePropertyAll(Colors.blue),
+            foregroundColor: const WidgetStatePropertyAll(Colors.white),
             shape: WidgetStatePropertyAll(
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             ),
           ),
-          child: Text(
+          child: const Text(
             "New Enroll",
             style: TextStyle(fontSize: 17),
           )),
