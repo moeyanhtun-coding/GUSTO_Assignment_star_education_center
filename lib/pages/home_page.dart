@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/route_manager.dart';
+import 'package:star_education_center/models/course_model.dart';
 import 'package:star_education_center/models/student_model.dart';
 import 'package:star_education_center/pages/courses_page.dart';
 import 'package:star_education_center/pages/student_page.dart';
-import 'package:star_education_center/services/firestore_service.dart';
+import 'package:star_education_center/services/course_firestore_service.dart';
+import 'package:star_education_center/services/student_firestore_service.dart';
 import 'package:star_education_center/ulti.dart';
 import 'package:uuid/uuid.dart';
 
@@ -13,9 +15,13 @@ String email = "";
 String phone = "";
 String name = "";
 String date = "";
+
+String courseName = "";
+double fees = 0;
 int _currentIndex = 0;
 
-final FirestoreService firestoreService = FirestoreService();
+final StudentFirestoreService firestoreService = StudentFirestoreService();
+final CourseFirestoreService courseService = CourseFirestoreService();
 final Uuid uuid = Uuid();
 
 List<String> certificateText = [
@@ -45,6 +51,9 @@ class _HomePageState extends State<HomePage> {
   TextEditingController _nameController = TextEditingController();
   TextEditingController _emailController = TextEditingController();
   TextEditingController _phoneController = TextEditingController();
+
+  TextEditingController _courseNameController = TextEditingController();
+  TextEditingController _courseFeesContorller = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -104,8 +113,9 @@ class _HomePageState extends State<HomePage> {
                     email = _emailController.text;
                     date = _dateController.text;
                     String studentId = uuid.v4();
-                    firestoreService.registerStudent(
-                        NewStudent(studentId, name, email, phone, date));
+                    List<String> courseId = [];
+                    firestoreService.registerStudent(NewStudent(
+                        studentId, name, email, phone, date, courseId));
 
                     _nameController.clear();
                     _phoneController.clear();
@@ -134,17 +144,105 @@ class _HomePageState extends State<HomePage> {
       );
     }
 
+    void newCourse() {
+      showDialog(
+        context: context,
+        builder: (context) => Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Container(
+            width: double.infinity,
+            height: 250,
+            padding: EdgeInsets.all(20),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                TextField(
+                  controller: _courseNameController,
+                  decoration: InputDecoration(
+                    label: Text("Course Name"),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                  ),
+                ),
+                margin(width: 0, height: 20),
+                TextField(
+                  controller: _courseFeesContorller,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    label: Text("Fees"),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                  ),
+                ),
+                margin(width: 0, height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    courseName = _courseNameController.text;
+                    fees = double.parse(_courseFeesContorller.text);
+
+                    String courseId = uuid.v4();
+
+                    courseService.createCourse(CourseModel(
+                      courseId,
+                      courseName,
+                      fees,
+                    ));
+
+                    _courseNameController.clear();
+                    _courseFeesContorller.clear();
+
+                    Navigator.pop(context);
+                  },
+                  child: Text(
+                    "Create",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  style: ButtonStyle(
+                    backgroundColor: WidgetStateProperty.all(Colors.blue),
+                    shape: WidgetStateProperty.all(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+                )
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
-      floatingActionButton: _currentIndex == 2
-          ? FloatingActionButton(
-              onPressed: newStudent,
-              foregroundColor: Colors.white,
-              backgroundColor: Colors.blue,
-              child: Icon(
-                Icons.person_add,
-              ),
-            )
-          : _nothing(),
+      floatingActionButton: () {
+        if (_currentIndex == 2) {
+          return FloatingActionButton(
+            onPressed: newStudent,
+            foregroundColor: Colors.white,
+            backgroundColor: Colors.blue,
+            child: const Icon(
+              Icons.person_add,
+              size: 26,
+            ),
+          );
+        } else if (_currentIndex == 1) {
+          return FloatingActionButton(
+            onPressed: newCourse,
+            foregroundColor: Colors.white,
+            backgroundColor: Colors.blue,
+            child: const Icon(
+              Icons.video_collection_rounded,
+            ),
+          );
+        } else {
+          return _nothing(); // Handle the default case when no valid value is matched
+        }
+      }(),
       appBar: _buildAppBar(),
       body: _pages[_currentIndex],
       bottomNavigationBar: SizedBox(
