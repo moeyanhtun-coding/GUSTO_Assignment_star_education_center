@@ -17,7 +17,7 @@ class StudentFirestoreService {
       'name': student.name,
       'email': student.email,
       'phone': student.phone,
-      'courseId': student.courseId,
+      'courseName': student.courseName,
       'section': student.section,
       'timeStep': Timestamp.now(),
     });
