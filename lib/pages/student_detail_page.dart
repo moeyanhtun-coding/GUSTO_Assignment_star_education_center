@@ -168,6 +168,8 @@ class StudentDetailsPage extends StatelessWidget {
               MaterialPageRoute(
                 builder: (context) => CoursesAddPage(
                   name: name,
+                  email: email,
+                  phone: phone,
                 ),
               ),
             );
