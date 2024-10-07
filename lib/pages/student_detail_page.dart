@@ -1,9 +1,17 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:developer';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:intl/intl.dart';
 
 import 'package:star_education_center/pages/courses_add_page.dart';
+import 'package:star_education_center/services/student_firestore_service.dart';
 import 'package:star_education_center/ulti.dart';
+
+final StudentFirestoreService _studentFirestoreService =
+    StudentFirestoreService();
 
 class StudentDetailsPage extends StatelessWidget {
   final String name;
@@ -15,7 +23,7 @@ class StudentDetailsPage extends StatelessWidget {
   final String documentId;
 
   const StudentDetailsPage({
-    Key? key,
+    super.key,
     required this.name,
     required this.email,
     required this.studentId,
@@ -23,7 +31,7 @@ class StudentDetailsPage extends StatelessWidget {
     required this.section,
     required this.courseName,
     required this.documentId,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -114,7 +122,9 @@ class StudentDetailsPage extends StatelessWidget {
                 margin(width: 0, height: 30),
                 _enrolled(),
                 margin(width: 0, height: 30),
-                Center(child: _newEnroll(context))
+                Center(
+                  child: _newEnroll(context),
+                )
               ],
             ),
           ),
@@ -152,6 +162,7 @@ class StudentDetailsPage extends StatelessWidget {
         SizedBox(
           height: 20,
         ),
+        CourseList(),
         Text(
           "There is no enrolled courses",
           style: TextStyle(color: Colors.red),
@@ -168,32 +179,186 @@ class StudentDetailsPage extends StatelessWidget {
       width: 140,
       height: 50,
       child: ElevatedButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => CoursesAddPage(
-                    studentId: studentId,
-                    section: section,
-                    name: name,
-                    email: email,
-                    phone: phone,
-                    courseName: courseName,
-                    documentId: documentId),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => CoursesAddPage(
+                studentId: studentId,
+                section: section,
+                name: name,
+                email: email,
+                phone: phone,
+                courseName: courseName,
+                documentId: documentId,
+              ),
+            ),
+          );
+        },
+        style: ButtonStyle(
+          backgroundColor: const WidgetStatePropertyAll(Colors.blue),
+          foregroundColor: const WidgetStatePropertyAll(Colors.white),
+          shape: WidgetStatePropertyAll(
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          ),
+        ),
+        child: const Text(
+          "New Enroll",
+          style: TextStyle(fontSize: 17),
+        ),
+      ),
+    );
+  }
+}
+
+class CourseList extends StatelessWidget {
+  const CourseList({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<QuerySnapshot>(
+      stream: student.getStudents(),
+      builder: (context, snapshot) {
+        // Check if there's data from the snapshot
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          log('Error: ${snapshot.error.toString()}');
+          return const Center(
+            child: Text('Error loading students',
+                style: TextStyle(color: Colors.red)),
+          );
+        }
+
+        // Handle the case where data is available
+        if (snapshot.hasData) {
+          List<DocumentSnapshot> coursesList = snapshot.data!.docs;
+
+          // Check if coursesList is empty
+          if (coursesList.isEmpty) {
+            return const Center(
+              child: Text(
+                'No Courses found',
+                style: TextStyle(color: Colors.red),
               ),
             );
-          },
-          style: ButtonStyle(
-            backgroundColor: const WidgetStatePropertyAll(Colors.blue),
-            foregroundColor: const WidgetStatePropertyAll(Colors.white),
-            shape: WidgetStatePropertyAll(
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          }
+
+          return ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: coursesList.length,
+            itemBuilder: (context, index) {
+              DocumentSnapshot document = coursesList[index];
+              Map<String, dynamic> data =
+                  document.data() as Map<String, dynamic>;
+
+              // Check if 'courseName' exists and is a list, and if it contains any items
+              if (data['courseName'] is List &&
+                  (data['courseName'] as List).isNotEmpty) {
+                // Get the first course name
+                String courseName =
+                    (data['courseName'] as List<dynamic>).first.toString();
+
+                return Course(
+                  courseName: courseName, // Pass the valid course name
+                );
+              }
+
+              // Return an empty container if there are no valid course names
+              return Container();
+            },
+          );
+        } else {
+          return const Center(
+            child:
+                Text('No Courses found', style: TextStyle(color: Colors.red)),
+          );
+        }
+      },
+    );
+  }
+}
+
+class Course extends StatelessWidget {
+  final String courseName; // Now a single string instead of a list
+
+  Course({
+    super.key,
+    required this.courseName,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Container(
+          width: MediaQuery.of(context).size.width,
+          margin: const EdgeInsets.symmetric(horizontal: 5.0),
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: Colors.blue,
+            ),
+            borderRadius: const BorderRadius.all(
+              Radius.circular(18),
             ),
           ),
-          child: const Text(
-            "New Enroll",
-            style: TextStyle(fontSize: 17),
-          )),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                margin(width: 0, height: 20),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(18),
+                  child: Image.asset('assets/courses/JS.png'),
+                ),
+                margin(width: 0, height: 10),
+
+                // Display the course name
+                Text(
+                  courseName,
+                  textAlign: TextAlign.start,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 19,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+
+                margin(width: 0, height: 20),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {},
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all(
+                              Colors.blue), // Blue background
+                          shape: MaterialStateProperty.all(
+                            RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                        ),
+                        child: const Text(
+                          "Enroll Now",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                margin(width: 0, height: 20),
+              ],
+            ),
+          ),
+        ),
+        margin(width: 0, height: 20),
+      ],
     );
   }
 }
