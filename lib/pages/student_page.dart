@@ -104,13 +104,13 @@ class _StudentPageState extends State<StudentPage> {
                   String email = _emailController.text;
                   String phone = _phoneController.text;
                   String date = _dateController.text;
-                  List<String> courseId = [];
+                  List<String> courseName = [];
 
                   // Update the student details
                   firestoreService.updateStudent(
                     documentId, // Pass the documentId of the student
                     StudentModel(studentId, name, email, phone, date,
-                        courseId), // Pass the updated StudentModel
+                        courseName), // Pass the updated StudentModel
                   );
 
                   // Clear the text fields
@@ -276,6 +276,16 @@ class StudentList extends StatelessWidget {
               String studentId = data['sId'];
               String studentPhone = data['phone'] ?? 'No Phone';
               String section = data['section'] ?? 'No Phone';
+              List<String> courseList;
+              if (data['courseName'] is List<String>) {
+                courseList = data['courseName'] as List<String>;
+              } else if (data['courseName'] is String) {
+                courseList = [
+                  data['courseName']
+                ]; // Wrap the single string in a list
+              } else {
+                courseList = ["No Data"];
+              }
 
               return Student(
                 studentId: studentId,
@@ -285,7 +295,7 @@ class StudentList extends StatelessWidget {
                 updateStudent: updateStudent,
                 phone: studentPhone,
                 section: section,
-                courseId: const [], // Pass the function to the Student
+                courseId: courseList, // Pass the function to the Student
               );
             },
           );
