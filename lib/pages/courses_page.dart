@@ -150,7 +150,9 @@ class CourseList extends StatelessWidget {
             return const Center(
               child: Text(
                 'No Courses found',
-                style: TextStyle(color: Colors.red),
+                style: TextStyle(
+                  color: Colors.red,
+                ),
               ),
             );
           }
