@@ -5,7 +5,6 @@ import 'package:star_education_center/firebase_options.dart';
 import 'package:star_education_center/pages/home_page.dart';
 import 'package:star_education_center/pages/login_page.dart';
 import 'package:star_education_center/pages/register_page.dart';
-import 'package:star_education_center/pages/student_detail_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
