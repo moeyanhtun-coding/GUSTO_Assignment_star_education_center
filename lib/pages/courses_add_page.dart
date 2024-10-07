@@ -1,21 +1,28 @@
 import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:star_education_center/pages/courses_page.dart';
 import 'package:star_education_center/pages/home_page.dart';
 import 'package:star_education_center/services/course_firestore_service.dart';
 import 'package:star_education_center/ulti.dart';
 
 List<String> selectedCoursesList = [];
-double totalPrice = 0;
+List<double> selectedPriceList = [];
+double totalPrice = 0.0;
 
 final CourseFirestoreService courses = CourseFirestoreService();
 
 class CoursesAddPage extends StatefulWidget {
   final String name;
-  CoursesAddPage({super.key, required this.name});
+  final String email;
+  final String phone;
+
+  const CoursesAddPage({
+    super.key,
+    required this.name,
+    required this.email,
+    required this.phone,
+  });
 
   @override
   State<CoursesAddPage> createState() => _CoursesAddPageState();
@@ -33,14 +40,28 @@ class _CoursesAddPageState extends State<CoursesAddPage> {
   }
 
   @override
+  void initState() {
+    setState(() {
+      totalPrice = 0;
+      selectedCoursesList = [];
+      selectedPriceList = [];
+    });
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: BottomContainer(),
+      bottomNavigationBar: BottomContainer(
+          name: widget.name,
+          email: widget.email,
+          phone: widget.phone,
+          total: totalPrice),
       backgroundColor: const Color.fromARGB(255, 0, 17, 32),
       appBar: AppBar(
         backgroundColor: Colors.black,
         foregroundColor: Colors.white,
-        title: Text(
+        title: const Text(
           "Courses Enrollement",
           style: TextStyle(),
         ),
@@ -55,9 +76,13 @@ class _CoursesAddPageState extends State<CoursesAddPage> {
         margin(width: 0, height: 26),
         _header(),
         margin(width: 0, height: 26),
-        SearchBar(),
+        _serachBar(context),
         margin(width: 0, height: 26),
-        Expanded(child: SingleChildScrollView(child: _streamCourses(context)))
+        Expanded(
+          child: SingleChildScrollView(
+            child: _streamCourses(context),
+          ),
+        ),
       ],
     );
   }
@@ -68,13 +93,13 @@ class _CoursesAddPageState extends State<CoursesAddPage> {
         children: [
           Text(
             "${widget.name} 's ",
-            style: TextStyle(
+            style: const TextStyle(
               color: Colors.blue,
               fontWeight: FontWeight.bold,
               fontSize: 27,
             ),
           ),
-          Text(
+          const Text(
             "Courses Enrollment Section",
             style: TextStyle(
               color: Colors.white,
@@ -118,6 +143,13 @@ class _CoursesAddPageState extends State<CoursesAddPage> {
                 return CourseEnroll(
                   courseFees: courseFees,
                   courseName: courseName,
+                  name: name,
+                  email: email,
+                  phone: phone,
+                  totalPrice: totalPrice,
+                  onSelectionChanged: (isSelected, courseFees) {
+                    updateTotalPrice(courseFees, isSelected);
+                  },
                 );
               });
         } else if (snapshot.hasError) {
@@ -135,13 +167,8 @@ class _CoursesAddPageState extends State<CoursesAddPage> {
       },
     );
   }
-}
 
-class SearchBar extends StatelessWidget {
-  const SearchBar({super.key});
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _serachBar(BuildContext context) {
     return const Padding(
       padding: EdgeInsets.symmetric(horizontal: 25),
       child: TextField(
@@ -177,12 +204,22 @@ class SearchBar extends StatelessWidget {
 class CourseEnroll extends StatefulWidget {
   final String courseName;
   final double courseFees;
+  final String name;
+  final String email;
+  final String phone;
+  final double totalPrice;
+  final Function(bool isSelected, double courseFees) onSelectionChanged;
 // Add the selectedCoursesList
 
-  CourseEnroll({
+  const CourseEnroll({
     super.key,
     required this.courseFees,
     required this.courseName,
+    required this.onSelectionChanged,
+    required this.name,
+    required this.email,
+    required this.phone,
+    required this.totalPrice,
     // Add selectedCoursesList to constructor
   });
 
@@ -195,19 +232,26 @@ class _CourseEnrollState extends State<CourseEnroll> {
   bool _isSelected = false;
 
   void _toggleSelection() {
-    setState(() {
-      _isSelected = !_isSelected; // Toggle the selection state
+    setState(
+      () {
+        _isSelected = !_isSelected;
 
-      // Add or remove the course name based on selection
-      if (_isSelected) {
-        selectedCoursesList
-            .add(widget.courseName); // Add course name to the list
-      } else {
-        selectedCoursesList
-            .remove(widget.courseName); // Remove course name from the list
-      }
-    });
+        // Notify parent widget about the selection change
+        widget.onSelectionChanged(_isSelected, widget.courseFees);
+
+        // Add or remove the course name based on selection
+        if (_isSelected) {
+          selectedCoursesList.add(widget.courseName);
+          selectedPriceList.add(widget.courseFees);
+        } else {
+          selectedCoursesList.remove(widget.courseName);
+          selectedPriceList.remove(widget.courseFees);
+        }
+      },
+    );
     print(selectedCoursesList);
+    print(selectedPriceList);
+    print(totalPrice);
   }
 
   @override
@@ -254,13 +298,13 @@ class _CourseEnrollState extends State<CourseEnroll> {
                   ),
                   IconButton(
                     style: ButtonStyle(
-                      foregroundColor: MaterialStateProperty.all(Colors.white),
-                      backgroundColor: MaterialStateProperty.all(
+                      foregroundColor: WidgetStateProperty.all(Colors.white),
+                      backgroundColor: WidgetStateProperty.all(
                         _isSelected
                             ? Colors.green
                             : Colors.blue, // Change color based on selection
                       ),
-                      shape: MaterialStateProperty.all(
+                      shape: WidgetStateProperty.all(
                         RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -283,7 +327,7 @@ class _CourseEnrollState extends State<CourseEnroll> {
               ),
             ),
           ),
-          SizedBox(height: 20)
+          const SizedBox(height: 20)
         ],
       ),
     );
@@ -291,33 +335,214 @@ class _CourseEnrollState extends State<CourseEnroll> {
 }
 
 class BottomContainer extends StatelessWidget {
+  final String name;
+  final String email;
+  final String phone;
+  final double total;
+
+  const BottomContainer({
+    super.key,
+    required this.name,
+    required this.email,
+    required this.phone,
+    required this.total,
+    // Add selectedCoursesList to constructor
+  });
+  void _totalCheckOut(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: SizedBox(
+              height: 500,
+              width: 400,
+              child: Column(
+                children: [
+                  margin(width: 0, height: 20),
+                  _headerSection(),
+                  _detail(),
+                  margin(width: 0, height: 10),
+                  Container(
+                    width: double.infinity,
+                    height: 1,
+                    color: Colors.black,
+                  ),
+                  margin(width: 0, height: 10),
+                  Expanded(child: _voucherDetail()),
+                  _voucherTotalDetail(totalPrice),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
-        color: Colors.black, // Background color of the container
-        height: 100, // Height of the container
-        child: const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20),
-          child: Row(
-            children: [
-              Text(
-                "Total Price  ",
-                style: TextStyle(
-                  color: Colors.blue,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 25,
+      color: Colors.black, // Background color of the container
+      height: 130, // Height of the container
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  "Total Price   ",
+                  style: TextStyle(
+                    color: Colors.blue,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
+                ),
+                Text(
+                  '${NumberFormat('#,###').format(totalPrice)} MMK', // Two decimal places
+                  style: const TextStyle(
+                    color: Colors.blue,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
+                ),
+              ],
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  style: ButtonStyle(
+                    backgroundColor: WidgetStatePropertyAll(Colors.blue),
+                    foregroundColor: WidgetStatePropertyAll(Colors.white),
+                    shape: WidgetStatePropertyAll(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                  ),
+                  onPressed: () {
+                    _totalCheckOut(context);
+                  },
+                  child: const Text(
+                    "Check Out",
+                    style: TextStyle(fontSize: 18),
+                  ),
                 ),
               ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _headerSection() {
+    return Column(
+      children: [
+        const Text(
+          "Star Eduction Center",
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        margin(width: 0, height: 15),
+        Container(
+          width: double.infinity,
+          height: 1,
+          color: Colors.black,
+        ),
+        margin(width: 0, height: 10),
+      ],
+    );
+  }
+
+  Widget _detail() {
+    return Row(
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text("Name - $name"),
+            Text("Email - $email"),
+            Text("Phone - $phone"),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _voucherDetail() {
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                for (int i = 0; i < selectedCoursesList.length; i++)
+                  Column(
+                    children: [
+                      Text(selectedCoursesList[i]),
+                      margin(width: 0, height: 4),
+                    ],
+                  ),
+              ],
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                for (int i = 0; i < selectedCoursesList.length; i++)
+                  Column(
+                    children: [
+                      Text(
+                        '${NumberFormat('#,###').format(selectedPriceList[i])} MMK',
+                      ),
+                      margin(width: 0, height: 4),
+                    ],
+                  ),
+              ],
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _voucherTotalDetail(double totalPrice) {
+    return Container(
+      height: 150,
+      child: Column(
+        children: [
+          Container(
+            width: double.infinity,
+            height: 1,
+            color: Colors.black,
+          ),
+          margin(width: 0, height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text("Subtotal"),
               Text(
-                "Total Price  ",
-                style: TextStyle(
-                  color: Colors.blue,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 25,
-                ),
+                '${NumberFormat('#,###').format(totalPrice)} MMK',
               ),
             ],
           ),
-        ));
+        ],
+      ),
+    );
   }
 }
