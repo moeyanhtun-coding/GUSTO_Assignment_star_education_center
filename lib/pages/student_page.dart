@@ -295,7 +295,7 @@ class StudentList extends StatelessWidget {
                 updateStudent: updateStudent,
                 phone: studentPhone,
                 section: section,
-                courseId: courseList, // Pass the function to the Student
+                courseName: courseList, // Pass the function to the Student
               );
             },
           );
@@ -321,7 +321,7 @@ class Student extends StatelessWidget {
   final String documentId;
   final String studentId;
   final String section;
-  final List<String> courseId;
+  final List<String> courseName;
   final Function(String, String)
       updateStudent; // Correctly define the updateStudent function type
   final String phone;
@@ -335,7 +335,7 @@ class Student extends StatelessWidget {
     required this.updateStudent,
     required this.phone,
     required this.section,
-    required this.courseId,
+    required this.courseName,
   });
 
   @override
@@ -346,12 +346,13 @@ class Student extends StatelessWidget {
           context,
           MaterialPageRoute(
             builder: (context) => StudentDetailsPage(
-              name: name,
-              email: email,
-              studentId: studentId,
-              phone: phone,
-              section: section,
-            ),
+                name: name,
+                email: email,
+                studentId: studentId,
+                phone: phone,
+                section: section,
+                courseName: courseName,
+                documentId: documentId),
           ),
         );
         log(name);
