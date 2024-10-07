@@ -1,5 +1,7 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+
 import 'package:star_education_center/pages/courses_add_page.dart';
 import 'package:star_education_center/ulti.dart';
 
@@ -9,15 +11,19 @@ class StudentDetailsPage extends StatelessWidget {
   final String studentId;
   final String phone;
   final String section;
+  final List<String> courseName;
+  final String documentId;
 
   const StudentDetailsPage({
-    super.key,
+    Key? key,
     required this.name,
     required this.email,
     required this.studentId,
     required this.phone,
     required this.section,
-  });
+    required this.courseName,
+    required this.documentId,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -167,10 +173,13 @@ class StudentDetailsPage extends StatelessWidget {
               context,
               MaterialPageRoute(
                 builder: (context) => CoursesAddPage(
-                  name: name,
-                  email: email,
-                  phone: phone,
-                ),
+                    studentId: studentId,
+                    section: section,
+                    name: name,
+                    email: email,
+                    phone: phone,
+                    courseName: courseName,
+                    documentId: documentId),
               ),
             );
           },
