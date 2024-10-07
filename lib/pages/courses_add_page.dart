@@ -2,26 +2,37 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:star_education_center/models/student_model.dart';
 import 'package:star_education_center/pages/home_page.dart';
 import 'package:star_education_center/services/course_firestore_service.dart';
+import 'package:star_education_center/services/student_firestore_service.dart';
 import 'package:star_education_center/ulti.dart';
 
 List<String> selectedCoursesList = [];
 List<double> selectedPriceList = [];
+double discount = 0;
 double totalPrice = 0.0;
-
+final StudentFirestoreService student = StudentFirestoreService();
 final CourseFirestoreService courses = CourseFirestoreService();
 
 class CoursesAddPage extends StatefulWidget {
+  final String section;
+  final String studentId;
   final String name;
   final String email;
   final String phone;
+  final List<String> courseName;
+  final String documentId;
 
   const CoursesAddPage({
     super.key,
     required this.name,
     required this.email,
     required this.phone,
+    required this.courseName,
+    required this.documentId,
+    required this.section,
+    required this.studentId,
   });
 
   @override
@@ -45,6 +56,8 @@ class _CoursesAddPageState extends State<CoursesAddPage> {
       totalPrice = 0;
       selectedCoursesList = [];
       selectedPriceList = [];
+
+      log("${widget.email} ${widget.documentId} ${widget.name} ${widget.phone}");
     });
     super.initState();
   }
@@ -53,10 +66,15 @@ class _CoursesAddPageState extends State<CoursesAddPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       bottomNavigationBar: BottomContainer(
-          name: widget.name,
-          email: widget.email,
-          phone: widget.phone,
-          total: totalPrice),
+        section: widget.section,
+        studentId: widget.studentId,
+        name: widget.name,
+        email: widget.email,
+        phone: widget.phone,
+        total: totalPrice,
+        courseName: selectedCoursesList,
+        documentId: widget.documentId,
+      ),
       backgroundColor: const Color.fromARGB(255, 0, 17, 32),
       appBar: AppBar(
         backgroundColor: Colors.black,
@@ -334,11 +352,15 @@ class _CourseEnrollState extends State<CourseEnroll> {
   }
 }
 
-class BottomContainer extends StatelessWidget {
+class BottomContainer extends StatefulWidget {
+  final String studentId;
   final String name;
   final String email;
   final String phone;
   final double total;
+  final String section;
+  final List<String> courseName;
+  final String documentId;
 
   const BottomContainer({
     super.key,
@@ -346,8 +368,18 @@ class BottomContainer extends StatelessWidget {
     required this.email,
     required this.phone,
     required this.total,
+    required this.courseName,
+    required this.documentId,
+    required this.studentId,
+    required this.section,
     // Add selectedCoursesList to constructor
   });
+
+  @override
+  State<BottomContainer> createState() => _BottomContainerState();
+}
+
+class _BottomContainerState extends State<BottomContainer> {
   void _totalCheckOut(BuildContext context) {
     showDialog(
       context: context,
@@ -374,7 +406,8 @@ class BottomContainer extends StatelessWidget {
                   ),
                   margin(width: 0, height: 10),
                   Expanded(child: _voucherDetail()),
-                  _voucherTotalDetail(totalPrice),
+                  _voucherTotalDetail(totalPrice, widget.courseName,
+                      widget.documentId, widget.studentId, widget.section),
                 ],
               ),
             ),
@@ -432,6 +465,19 @@ class BottomContainer extends StatelessWidget {
                     ),
                   ),
                   onPressed: () {
+                    if (selectedCoursesList.length == 1)
+                      setState(() {
+                        discount = (totalPrice * 5) / 100;
+                      });
+                    else if (selectedCoursesList.length == 2)
+                      setState(() {
+                        discount = (totalPrice * 10) / 100;
+                      });
+                    else if (selectedCoursesList.length > 2)
+                      setState(() {
+                        discount = (totalPrice * 20) / 100;
+                      });
+                    print(discount);
                     _totalCheckOut(context);
                   },
                   child: const Text(
@@ -474,9 +520,9 @@ class BottomContainer extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Name - $name"),
-            Text("Email - $email"),
-            Text("Phone - $phone"),
+            Text("Name - ${widget.name}"),
+            Text("Email - ${widget.email}"),
+            Text("Phone - ${widget.phone}"),
           ],
         ),
       ],
@@ -521,9 +567,15 @@ class BottomContainer extends StatelessWidget {
     );
   }
 
-  Widget _voucherTotalDetail(double totalPrice) {
+  Widget _voucherTotalDetail(
+    double totalPrice,
+    List<String> courseName,
+    String documentId,
+    String studentId,
+    String section,
+  ) {
     return Container(
-      height: 150,
+      height: 180,
       child: Column(
         children: [
           Container(
@@ -540,6 +592,61 @@ class BottomContainer extends StatelessWidget {
                 '${NumberFormat('#,###').format(totalPrice)} MMK',
               ),
             ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text("Discount"),
+              if (selectedCoursesList.length == 1)
+                Text("5 %")
+              else if (selectedCoursesList.length == 2)
+                Text("10 %")
+              else if (selectedCoursesList.length >= 3)
+                Text("20 %")
+            ],
+          ),
+          margin(width: 0, height: 10),
+          Container(
+            width: double.infinity,
+            height: 1,
+            color: Colors.black,
+          ),
+          margin(width: 0, height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text("Total"),
+              Text(
+                '${NumberFormat('#,###').format(totalPrice - discount)} MMK',
+              ),
+            ],
+          ),
+          margin(width: 0, height: 20),
+          Container(
+            width: double.infinity,
+            child: ElevatedButton(
+              style: ButtonStyle(
+                backgroundColor: WidgetStatePropertyAll(Colors.blue),
+                foregroundColor: WidgetStatePropertyAll(Colors.white),
+                shape: WidgetStatePropertyAll(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              ),
+              onPressed: () {
+                student.updateStudent(
+                    documentId,
+                    StudentModel(studentId, widget.name, widget.email,
+                        widget.phone, section, courseName));
+
+                Navigator.pop(context);
+              },
+              child: const Text(
+                "Confrim",
+                style: TextStyle(fontSize: 18),
+              ),
+            ),
           ),
         ],
       ),
