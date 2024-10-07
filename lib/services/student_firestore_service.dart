@@ -58,7 +58,18 @@ class StudentFirestoreService {
       'email': student.email,
       'phone': student.phone,
       'section': student.section,
-      'timeStep': Timestamp.now() // Update timestamp
+      'timeStep': Timestamp.now(),
+      'courseName': student.courseName // Update timestamp
+    }).then((_) {
+      log("Student with ID: $documentId updated");
+    }).catchError((error) {
+      log("Failed to update student: $error");
+    });
+  }
+
+  Future<void> updateCourseStudent(String documentId, List<String> courseName) {
+    return students.doc(documentId).update({
+      'courseName': courseName // Update timestamp
     }).then((_) {
       log("Student with ID: $documentId updated");
     }).catchError((error) {
