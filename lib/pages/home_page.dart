@@ -1,7 +1,11 @@
+import 'dart:developer';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/route_manager.dart';
+import 'package:intl/intl.dart';
 import 'package:star_education_center/models/course_model.dart';
 import 'package:star_education_center/models/student_model.dart';
 import 'package:star_education_center/pages/courses_page.dart';
@@ -460,8 +464,12 @@ class TotalCategory extends StatelessWidget {
   final String total;
   final String name;
 
-  const TotalCategory(
-      {super.key, required this.icon, required this.total, required this.name});
+  const TotalCategory({
+    super.key,
+    required this.icon,
+    required this.total,
+    required this.name,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -473,12 +481,18 @@ class TotalCategory extends StatelessWidget {
         Text(
           total,
           style: const TextStyle(
-              color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 14,
+          ),
         ),
         Text(
           name,
           style: const TextStyle(
-              color: Colors.white, fontWeight: FontWeight.normal, fontSize: 10),
+            color: Colors.white,
+            fontWeight: FontWeight.normal,
+            fontSize: 10,
+          ),
         ),
       ],
     );
@@ -522,9 +536,9 @@ class CourseCarousel extends StatelessWidget {
   Widget build(BuildContext context) {
     return CarouselSlider(
       options: CarouselOptions(
-        height: 460,
+        height: 431,
         aspectRatio: 16 / 10,
-        viewportFraction: 0.87,
+        viewportFraction: 0.9,
         initialPage: 0,
         enableInfiniteScroll: true,
         reverse: false,
@@ -539,90 +553,7 @@ class CourseCarousel extends StatelessWidget {
       items: [1, 2, 3, 4, 5].map((i) {
         return Builder(
           builder: (BuildContext context) {
-            return Container(
-              width: MediaQuery.of(context).size.width,
-              margin: const EdgeInsets.symmetric(horizontal: 5.0),
-              decoration: BoxDecoration(
-                  border: Border.all(
-                    color: Colors.blue,
-                  ),
-                  borderRadius: const BorderRadius.all(Radius.circular(18))),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    margin(width: 0, height: 20),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(18),
-                      child: Image.asset('assets/courses/JS.png'),
-                    ),
-                    margin(width: 0, height: 10),
-                    const Text(
-                      "Programming Basic With JavaScript",
-                      textAlign: TextAlign.start,
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 19,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    margin(width: 0, height: 6),
-                    Row(
-                      children: [
-                        const Text(
-                          "Chapters - 6",
-                          style: TextStyle(
-                            color: Colors.white70,
-                            fontSize: 14,
-                          ),
-                        ),
-                        margin(width: 30, height: 0),
-                        const Text(
-                          "Lessons - 20",
-                          style: TextStyle(
-                            color: Colors.white70,
-                            fontSize: 14,
-                          ),
-                        ),
-                      ],
-                    ),
-                    margin(width: 0, height: 10),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 5),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text(
-                            "Fees - 5000,000 MMK",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 18,
-                            ),
-                          ),
-                          ElevatedButton(
-                            onPressed: () {},
-                            style: ButtonStyle(
-                              backgroundColor: WidgetStateProperty.all(
-                                  Colors.blue), // Blue background
-                              shape: WidgetStateProperty.all(
-                                RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                            ),
-                            child: const Text(
-                              "Enroll Now",
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
+            return CourseList();
           },
         );
       }).toList(),
@@ -673,7 +604,11 @@ class StartLearningButton extends StatelessWidget {
       width: 180,
       height: 50,
       decoration: const BoxDecoration(boxShadow: [
-        BoxShadow(color: Colors.blue, blurRadius: 25, spreadRadius: 0.2),
+        BoxShadow(
+          color: Colors.blue,
+          blurRadius: 25,
+          spreadRadius: 0.2,
+        ),
       ]),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
@@ -729,6 +664,147 @@ class _DateOfBirthPickerState extends State<DateOfBirthPicker> {
       ),
       readOnly: true, // Makes sure the keyboard doesn't appear
       onTap: () => _selectDate(context), // Opens the date picker on tap
+    );
+  }
+}
+
+class CourseList extends StatelessWidget {
+  const CourseList({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<QuerySnapshot>(
+      stream: courses.getCourses(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          List<DocumentSnapshot> coursesList = snapshot.data!.docs;
+
+          if (coursesList.isEmpty) {
+            return const Center(
+              child: Text(
+                'No Courses found',
+                style: TextStyle(color: Colors.red),
+              ),
+            );
+          }
+
+          return ListView.builder(
+            scrollDirection: Axis.vertical,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: coursesList.length,
+            itemBuilder: (context, index) {
+              DocumentSnapshot document = coursesList[index];
+              Map<String, dynamic> data =
+                  document.data() as Map<String, dynamic>;
+
+              String courseName = data['courseName'] ?? 'No Name';
+              double courseFees = data['fees'] ?? 'No Email';
+
+              return Course(
+                courseName: courseName,
+                fees: courseFees,
+              );
+            },
+          );
+        } else if (snapshot.hasError) {
+          log('Error: ${snapshot.error.toString()}');
+          return const Center(
+            child: Text('Error loading students',
+                style: TextStyle(color: Colors.red)),
+          );
+        } else {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+      },
+    );
+  }
+}
+
+class Course extends StatelessWidget {
+  String courseName;
+  double fees;
+  Course({super.key, required this.courseName, required this.fees});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Container(
+          width: MediaQuery.of(context).size.width,
+          margin: const EdgeInsets.symmetric(horizontal: 5.0),
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: Colors.blue,
+            ),
+            borderRadius: const BorderRadius.all(
+              Radius.circular(18),
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                margin(width: 0, height: 20),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(18),
+                  child: Image.asset('assets/courses/JS.png'),
+                ),
+                margin(width: 0, height: 10),
+                Text(
+                  courseName,
+                  textAlign: TextAlign.start,
+                  style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 19,
+                      fontWeight: FontWeight.bold),
+                ),
+                margin(width: 0, height: 20),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Fees - ${NumberFormat('#,###').format(fees)} MMK",
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                        ),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {},
+                        style: ButtonStyle(
+                          backgroundColor: WidgetStateProperty.all(
+                            Colors.blue,
+                          ), // Blue background
+                          shape: WidgetStateProperty.all(
+                            RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                        ),
+                        child: const Text(
+                          "Enroll Now",
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                margin(width: 0, height: 20),
+              ],
+            ),
+          ),
+        ),
+        margin(width: 0, height: 20)
+      ],
     );
   }
 }
