@@ -7,11 +7,14 @@ import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 
 import 'package:star_education_center/pages/courses_add_page.dart';
+import 'package:star_education_center/services/course_firestore_service.dart';
 import 'package:star_education_center/services/student_firestore_service.dart';
 import 'package:star_education_center/ulti.dart';
 
 final StudentDatabase _studentService =
     FirestoreStudentDatabase(); // Use Firestore implementation
+
+final CourseFirestoreService _courseFirestoreService = CourseFirestoreService();
 
 class StudentDetailsPage extends StatefulWidget {
   final String name;
@@ -243,12 +246,44 @@ class CourseList extends StatelessWidget {
   }
 }
 
-class Course extends StatelessWidget {
-  String courseName;
+class Course extends StatefulWidget {
+  final String courseName;
   Course({
     Key? key,
     required this.courseName,
   }) : super(key: key);
+
+  @override
+  _CourseState createState() => _CourseState();
+}
+
+class _CourseState extends State<Course> {
+  String? courseDuration; // To store the duration
+  bool isLoading = true; // To track the loading state
+
+  @override
+  void initState() {
+    super.initState();
+    fetchCourseDuration(); // Fetch course duration on widget initialization
+  }
+
+  // Method to fetch the course duration from Firebase
+  Future<void> fetchCourseDuration() async {
+    try {
+      DocumentSnapshot courseData =
+          await _courseFirestoreService.getCourseByName(widget.courseName);
+      setState(() {
+        courseDuration = courseData[
+            'courseDuration']; // Assuming 'duration' is the field name
+        isLoading = false;
+      });
+    } catch (error) {
+      print('Error fetching course duration: $error');
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -263,20 +298,34 @@ class Course extends StatelessWidget {
           height: 80,
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 15),
-            child: Row(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  courseName,
+                  widget.courseName,
                   style: TextStyle(
-                      color: Colors.blue,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold),
+                    color: Colors.blue,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
+                isLoading
+                    ? CircularProgressIndicator() // Show loading indicator while data is fetching
+                    : Text(
+                        courseDuration != null
+                            ? 'Course Duration - $courseDuration months' // Display the duration if fetched
+                            : 'Duration not available',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 15,
+                        ),
+                      ),
               ],
             ),
           ),
         ),
-        margin(width: 0, height: 10)
+        SizedBox(height: 10),
       ],
     );
   }
