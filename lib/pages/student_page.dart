@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:star_education_center/models/student_model.dart';
 import 'package:star_education_center/pages/home_page.dart';
 import 'package:star_education_center/pages/student_detail_page.dart';
+import 'package:star_education_center/services/student_firestore_service.dart';
+
+final StudentDatabase _studentService = FirestoreStudentDatabase();
 
 class StudentPage extends StatefulWidget {
   const StudentPage({super.key});
@@ -107,7 +110,7 @@ class _StudentPageState extends State<StudentPage> {
                   List<String> courseName = [];
 
                   // Update the student details
-                  firestoreService.updateStudent(
+                  _studentService.updateStudent(
                     documentId, // Pass the documentId of the student
                     StudentModel(studentId, name, email, phone, date,
                         courseName), // Pass the updated StudentModel
@@ -246,8 +249,8 @@ class StudentList extends StatelessWidget {
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
       stream: searchString.isNotEmpty
-          ? firestoreService.searchStudentsByName(searchString)
-          : firestoreService.getStudents(),
+          ? _studentService.searchStudentsByName(searchString)
+          : _studentService.getStudents(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           List<DocumentSnapshot> studentLists = snapshot.data!.docs;
@@ -435,7 +438,7 @@ class Student extends StatelessWidget {
                                             ),
                                           ),
                                           onPressed: () {
-                                            firestoreService
+                                            _studentService
                                                 .deleteStudent(documentId);
                                             Navigator.pop(context);
                                           },
