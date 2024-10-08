@@ -15,8 +15,7 @@ List<String> existingCourse = [];
 List<double> selectedPriceList = [];
 double discount = 0;
 double totalPrice = 0.0;
-final StudentFirestoreService student = StudentFirestoreService();
-final CourseFirestoreService courses = CourseFirestoreService();
+final StudentDatabase _studentService = FirestoreStudentDatabase();
 
 class CoursesAddPage extends StatefulWidget {
   final String section;
@@ -28,7 +27,7 @@ class CoursesAddPage extends StatefulWidget {
   final String documentId;
 
   const CoursesAddPage({
-    super.key,
+    Key? key,
     required this.name,
     required this.email,
     required this.phone,
@@ -36,22 +35,15 @@ class CoursesAddPage extends StatefulWidget {
     required this.documentId,
     required this.section,
     required this.studentId,
-  });
+  }) : super(key: key);
 
   @override
   State<CoursesAddPage> createState() => _CoursesAddPageState();
 }
 
 class _CoursesAddPageState extends State<CoursesAddPage> {
-  void updateTotalPrice(double courseFees, bool isSelected) {
-    setState(() {
-      if (isSelected) {
-        totalPrice += courseFees; // Add course fee to total price
-      } else {
-        totalPrice -= courseFees; // Subtract course fee from total price
-      }
-    });
-  }
+  // Use Firestore implementation
+  final CourseFirestoreService _coursesService = CourseFirestoreService();
 
   @override
   void initState() {
@@ -59,7 +51,7 @@ class _CoursesAddPageState extends State<CoursesAddPage> {
       totalPrice = 0;
       selectedCoursesList = [];
       selectedPriceList = [];
-      _fetchFirestoreData(widget.studentId);
+      _fetchExistingCourses();
       print(existingCourse);
 
       log("${widget.email} ${widget.documentId} ${widget.name} ${widget.phone}");
@@ -67,29 +59,34 @@ class _CoursesAddPageState extends State<CoursesAddPage> {
     super.initState();
   }
 
-  void _fetchFirestoreData(String studentId) async {
+  void _fetchExistingCourses() async {
     try {
-      // Fetch data from Firestore
       DocumentSnapshot<Object?> querySnapshot =
-          await student.getStudentById(studentId);
+          await _studentService.getStudentById(widget.studentId);
 
-      // Convert the fetched documents to a list of maps
-      List<dynamic> courseNameList = querySnapshot.get('courseName');
-
-      // Update the state to reflect the fetched data
+      List<dynamic> courseNameList = querySnapshot.get('courseName') ?? [];
       setState(() {
-        // Assuming you have a state variable to hold the courseName list
         existingCourse = List<String>.from(courseNameList);
       });
     } catch (e) {
-      // Handle any errors here
-      print('Error fetching data: $e');
+      log('Error fetching existing courses: $e');
     }
+  }
+
+  void updateTotalPrice(double courseFees, bool isSelected) {
+    setState(() {
+      totalPrice += isSelected ? courseFees : -courseFees;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        foregroundColor: Colors.white,
+        title: const Text("Courses Enrollment"),
+      ),
       bottomNavigationBar: BottomContainer(
         section: widget.section,
         studentId: widget.studentId,
@@ -101,31 +98,16 @@ class _CoursesAddPageState extends State<CoursesAddPage> {
         documentId: widget.documentId,
       ),
       backgroundColor: const Color.fromARGB(255, 0, 17, 32),
-      appBar: AppBar(
-        backgroundColor: Colors.black,
-        foregroundColor: Colors.white,
-        title: const Text(
-          "Courses Enrollement",
-          style: TextStyle(),
-        ),
-      ),
-      body: _buildUI(context),
+      body: _buildBody(context),
     );
   }
 
-  Widget _buildUI(BuildContext context) {
+  Widget _buildBody(BuildContext context) {
     return Column(
       children: [
-        margin(width: 0, height: 26),
         _header(),
-        margin(width: 0, height: 26),
-        _serachBar(context),
-        margin(width: 0, height: 26),
-        Expanded(
-          child: SingleChildScrollView(
-            child: _streamCourses(context),
-          ),
-        ),
+        _searchBar(),
+        Expanded(child: _streamCourses(context)),
       ],
     );
   }
@@ -135,7 +117,7 @@ class _CoursesAddPageState extends State<CoursesAddPage> {
       child: Column(
         children: [
           Text(
-            "${widget.name} 's ",
+            "${widget.name}'s ",
             style: const TextStyle(
               color: Colors.blue,
               fontWeight: FontWeight.bold,
@@ -149,15 +131,39 @@ class _CoursesAddPageState extends State<CoursesAddPage> {
               fontWeight: FontWeight.bold,
               fontSize: 27,
             ),
-          )
+          ),
         ],
+      ),
+    );
+  }
+
+  Widget _searchBar() {
+    return const Padding(
+      padding: EdgeInsets.symmetric(horizontal: 25),
+      child: TextField(
+        style: TextStyle(color: Colors.white),
+        decoration: InputDecoration(
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.blue),
+            borderRadius: BorderRadius.all(Radius.circular(25)),
+          ),
+          hintText: "What are you looking for?",
+          hintStyle: TextStyle(
+            color: Colors.grey,
+            fontWeight: FontWeight.bold,
+          ),
+          prefixIcon: Icon(Icons.search, color: Colors.blue),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(25)),
+          ),
+        ),
       ),
     );
   }
 
   Widget _streamCourses(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: courses.getCourses(),
+      stream: _coursesService.getCourses(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           List<DocumentSnapshot> coursesList = snapshot.data!.docs;
@@ -172,74 +178,34 @@ class _CoursesAddPageState extends State<CoursesAddPage> {
           }
 
           return ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: coursesList.length,
-              itemBuilder: (context, index) {
-                DocumentSnapshot document = coursesList[index];
-                Map<String, dynamic> data =
-                    document.data() as Map<String, dynamic>;
+            itemCount: coursesList.length,
+            itemBuilder: (context, index) {
+              DocumentSnapshot document = coursesList[index];
+              Map<String, dynamic> data =
+                  document.data() as Map<String, dynamic>;
 
-                String courseName = data['courseName'] ?? 'No Name';
-                double courseFees = data['fees'] ?? 0.0; // Changed to double
+              String courseName = data['courseName'] ?? 'No Name';
+              double courseFees = data['fees'] ?? 0.0;
 
-                return CourseEnroll(
-                  courseFees: courseFees,
-                  courseName: courseName,
-                  name: name,
-                  email: email,
-                  phone: phone,
-                  totalPrice: totalPrice,
-                  onSelectionChanged: (isSelected, courseFees) {
-                    updateTotalPrice(courseFees, isSelected);
-                  },
-                );
-              });
+              return CourseEnroll(
+                courseFees: courseFees,
+                courseName: courseName,
+                onSelectionChanged: (isSelected, courseFees) {
+                  updateTotalPrice(courseFees, isSelected);
+                },
+              );
+            },
+          );
         } else if (snapshot.hasError) {
           log('Error: ${snapshot.error.toString()}');
           return const Center(
-            child:
-                Text('Error loading courses', // Changed 'students' to 'courses'
-                    style: TextStyle(color: Colors.red)),
+            child: Text('Error loading courses',
+                style: TextStyle(color: Colors.red)),
           );
         } else {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
+          return const Center(child: CircularProgressIndicator());
         }
       },
-    );
-  }
-
-  Widget _serachBar(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.symmetric(horizontal: 25),
-      child: TextField(
-        style: TextStyle(color: Colors.white),
-        decoration: InputDecoration(
-          enabledBorder: OutlineInputBorder(
-            borderSide:
-                BorderSide(color: Colors.blue), // Change to your desired color
-            borderRadius: BorderRadius.all(
-              Radius.circular(25),
-            ),
-          ),
-          hintText: "What are you looking for ?",
-          hintStyle: TextStyle(
-            color: Colors.grey,
-            fontWeight: FontWeight.bold,
-          ),
-          prefixIcon: Icon(
-            Icons.search,
-            color: Colors.blue,
-          ),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.all(
-              Radius.circular(25),
-            ),
-          ),
-        ),
-      ),
     );
   }
 }
@@ -247,31 +213,20 @@ class _CoursesAddPageState extends State<CoursesAddPage> {
 class CourseEnroll extends StatefulWidget {
   final String courseName;
   final double courseFees;
-  final String name;
-  final String email;
-  final String phone;
-  final double totalPrice;
   final Function(bool isSelected, double courseFees) onSelectionChanged;
-// Add the selectedCoursesList
 
   const CourseEnroll({
-    super.key,
+    Key? key,
     required this.courseFees,
     required this.courseName,
     required this.onSelectionChanged,
-    required this.name,
-    required this.email,
-    required this.phone,
-    required this.totalPrice,
-    // Add selectedCoursesList to constructor
-  });
+  }) : super(key: key);
 
   @override
   State<CourseEnroll> createState() => _CourseEnrollState();
 }
 
 class _CourseEnrollState extends State<CourseEnroll> {
-  // State variable to track if the icon is selected
   bool _isSelected = false;
 
   void _toggleSelection() {
@@ -301,77 +256,51 @@ class _CourseEnrollState extends State<CourseEnroll> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 18.0),
-      child: Column(
-        children: [
-          Container(
-            width: double.infinity,
-            height: 120,
-            decoration: BoxDecoration(
-              border: Border.all(
-                color: Colors.blue,
-              ),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
+      child: Container(
+        width: double.infinity,
+        height: 120,
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.blue),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        widget.courseName,
-                        style: const TextStyle(
-                          color: Colors.blue,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        "Fees - ${NumberFormat('#,###').format(widget.courseFees)} MMK",
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                  IconButton(
-                    style: ButtonStyle(
-                      foregroundColor: WidgetStateProperty.all(Colors.white),
-                      backgroundColor: WidgetStateProperty.all(
-                        _isSelected
-                            ? Colors.green
-                            : Colors.blue, // Change color based on selection
-                      ),
-                      shape: WidgetStateProperty.all(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
+                  Text(
+                    widget.courseName,
+                    style: const TextStyle(
+                      color: Colors.blue,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
                     ),
-                    onPressed:
-                        _toggleSelection, // Call toggle function on press
-                    icon: Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: Icon(
-                        _isSelected
-                            ? Icons.check
-                            : Icons
-                                .add_shopping_cart_rounded, // Change icon based on selection
-                        size: 25,
-                      ),
+                  ),
+                  Text(
+                    "Fees - ${NumberFormat('#,###').format(widget.courseFees)} MMK",
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ],
               ),
-            ),
+              IconButton(
+                onPressed: _toggleSelection,
+                icon: Icon(
+                  _isSelected ? Icons.check : Icons.add_shopping_cart_rounded,
+                  color: Colors.white,
+                ),
+                color: _isSelected ? Colors.green : Colors.blue,
+              ),
+            ],
           ),
-          const SizedBox(height: 20)
-        ],
+        ),
       ),
     );
   }
@@ -641,6 +570,8 @@ class _BottomContainerState extends State<BottomContainer> {
                 Text("10 %")
               else if (existingCourse.length >= 3)
                 Text("20 %")
+              else
+                Text("0 %")
             ],
           ),
           margin(width: 0, height: 10),
@@ -676,7 +607,7 @@ class _BottomContainerState extends State<BottomContainer> {
                 setState(() {
                   existingCourse.addAll(selectedCoursesList);
                 });
-                student.updateStudent(
+                _studentService.updateStudent(
                     documentId,
                     StudentModel(studentId, widget.name, widget.email,
                         widget.phone, section, existingCourse));
