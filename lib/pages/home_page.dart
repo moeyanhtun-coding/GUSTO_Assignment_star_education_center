@@ -24,7 +24,7 @@ String courseName = "";
 double fees = 0;
 int _currentIndex = 0;
 
-final StudentFirestoreService firestoreService = StudentFirestoreService();
+final StudentDatabase _studentService = FirestoreStudentDatabase();
 final CourseFirestoreService courseService = CourseFirestoreService();
 final Uuid uuid = Uuid();
 
@@ -118,7 +118,7 @@ class _HomePageState extends State<HomePage> {
                     date = _dateController.text;
                     String studentId = uuid.v4();
                     List<String> courseId = [];
-                    firestoreService.registerStudent(NewStudent(
+                    _studentService.registerStudent(NewStudent(
                         studentId, name, email, phone, date, courseId));
 
                     _nameController.clear();
