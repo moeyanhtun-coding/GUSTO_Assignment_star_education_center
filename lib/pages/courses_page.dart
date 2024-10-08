@@ -168,10 +168,12 @@ class CourseList extends StatelessWidget {
 
               String courseName = data['courseName'] ?? 'No Name';
               double courseFees = data['fees'] ?? 'No Email';
+              String courseDuration = data['courseDuration'] ?? 'No Data';
 
               return Course(
                 courseName: courseName,
                 fees: courseFees,
+                courseDuration: courseDuration,
               );
             },
           );
@@ -192,9 +194,14 @@ class CourseList extends StatelessWidget {
 }
 
 class Course extends StatelessWidget {
+  String courseDuration;
   String courseName;
   double fees;
-  Course({super.key, required this.courseName, required this.fees});
+  Course(
+      {super.key,
+      required this.courseName,
+      required this.fees,
+      required this.courseDuration});
 
   @override
   Widget build(BuildContext context) {
@@ -223,13 +230,26 @@ class Course extends StatelessWidget {
                   child: Image.asset('assets/courses/JS.png'),
                 ),
                 margin(width: 0, height: 10),
-                Text(
-                  courseName,
-                  textAlign: TextAlign.start,
-                  style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 19,
-                      fontWeight: FontWeight.bold),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      courseName,
+                      textAlign: TextAlign.start,
+                      style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 19,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      'Duration - $courseDuration months',
+                      textAlign: TextAlign.start,
+                      style: const TextStyle(
+                          color: Colors.white54,
+                          fontSize: 15,
+                          fontWeight: FontWeight.normal),
+                    ),
+                  ],
                 ),
                 margin(width: 0, height: 20),
                 Padding(
