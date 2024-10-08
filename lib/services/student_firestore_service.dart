@@ -51,6 +51,24 @@ class StudentFirestoreService {
     });
   }
 
+  Future<DocumentSnapshot> getStudentById(String studentId) async {
+    try {
+      // Query the student by sId
+      QuerySnapshot querySnapshot =
+          await students.where('sId', isEqualTo: studentId).get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        // Return the first document that matches the query
+        return querySnapshot.docs.first;
+      } else {
+        throw Exception("No student found with ID: $studentId");
+      }
+    } catch (error) {
+      log("Failed to retrieve student: $error");
+      throw error;
+    }
+  }
+
   // update function
   Future<void> updateStudent(String documentId, StudentModel student) {
     return students.doc(documentId).update({
