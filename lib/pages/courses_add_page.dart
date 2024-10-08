@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:get/route_manager.dart';
 import 'package:intl/intl.dart';
 import 'package:star_education_center/models/student_model.dart';
 import 'package:star_education_center/pages/home_page.dart';
@@ -681,6 +682,7 @@ class _BottomContainerState extends State<BottomContainer> {
                         widget.phone, section, existingCourse));
 
                 Navigator.pop(context);
+                Get.toNamed("/home");
               },
               child: const Text(
                 "Confrim",
