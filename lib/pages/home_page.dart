@@ -19,6 +19,7 @@ String email = "";
 String phone = "";
 String name = "";
 String date = "";
+String duration = "";
 
 String courseName = "";
 double fees = 0;
@@ -58,6 +59,7 @@ class _HomePageState extends State<HomePage> {
 
   TextEditingController _courseNameController = TextEditingController();
   TextEditingController _courseFeesContorller = TextEditingController();
+  TextEditingController _courseDurationController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -157,7 +159,7 @@ class _HomePageState extends State<HomePage> {
           ),
           child: Container(
             width: double.infinity,
-            height: 250,
+            height: 350,
             padding: EdgeInsets.all(20),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -184,21 +186,31 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
                 margin(width: 0, height: 20),
+                TextField(
+                  controller: _courseDurationController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    label: Text("Duration"),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                  ),
+                ),
+                margin(width: 0, height: 20),
                 ElevatedButton(
                   onPressed: () {
                     courseName = _courseNameController.text;
                     fees = double.parse(_courseFeesContorller.text);
+                    duration = _courseDurationController.text;
 
                     String courseId = uuid.v4();
 
-                    courseService.createCourse(CourseModel(
-                      courseId,
-                      courseName,
-                      fees,
-                    ));
+                    courseService.createCourse(
+                        CourseModel(courseId, courseName, fees, duration));
 
                     _courseNameController.clear();
                     _courseFeesContorller.clear();
+                    _courseDurationController.clear();
 
                     Navigator.pop(context);
                   },
