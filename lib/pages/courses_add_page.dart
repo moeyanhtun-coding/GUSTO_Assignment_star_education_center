@@ -4,11 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:star_education_center/models/student_model.dart';
 import 'package:star_education_center/pages/home_page.dart';
+import 'package:star_education_center/pages/student_page.dart';
 import 'package:star_education_center/services/course_firestore_service.dart';
 import 'package:star_education_center/services/student_firestore_service.dart';
 import 'package:star_education_center/ulti.dart';
 
 List<String> selectedCoursesList = [];
+List<String> existingCourse = [];
 List<double> selectedPriceList = [];
 double discount = 0;
 double totalPrice = 0.0;
@@ -56,10 +58,32 @@ class _CoursesAddPageState extends State<CoursesAddPage> {
       totalPrice = 0;
       selectedCoursesList = [];
       selectedPriceList = [];
+      _fetchFirestoreData(widget.studentId);
+      print(existingCourse);
 
       log("${widget.email} ${widget.documentId} ${widget.name} ${widget.phone}");
     });
     super.initState();
+  }
+
+  void _fetchFirestoreData(String studentId) async {
+    try {
+      // Fetch data from Firestore
+      DocumentSnapshot<Object?> querySnapshot =
+          await student.getStudentById(studentId);
+
+      // Convert the fetched documents to a list of maps
+      List<dynamic> courseNameList = querySnapshot.get('courseName');
+
+      // Update the state to reflect the fetched data
+      setState(() {
+        // Assuming you have a state variable to hold the courseName list
+        existingCourse = List<String>.from(courseNameList);
+      });
+    } catch (e) {
+      // Handle any errors here
+      print('Error fetching data: $e');
+    }
   }
 
   @override
@@ -465,19 +489,32 @@ class _BottomContainerState extends State<BottomContainer> {
                     ),
                   ),
                   onPressed: () {
-                    if (selectedCoursesList.length == 1)
-                      setState(() {
-                        discount = (totalPrice * 5) / 100;
-                      });
-                    else if (selectedCoursesList.length == 2)
-                      setState(() {
-                        discount = (totalPrice * 10) / 100;
-                      });
-                    else if (selectedCoursesList.length > 2)
-                      setState(() {
-                        discount = (totalPrice * 20) / 100;
-                      });
-                    print(discount);
+                    setState(() {
+                      if (selectedCoursesList.isNotEmpty &&
+                          existingCourse.isEmpty) {
+                        // New student - full fee
+                        discount = 0;
+                      } else if (existingCourse.isNotEmpty) {
+                        // Returning student
+                        if (existingCourse.length == 1) {
+                          discount = (totalPrice * 5) /
+                              100; // 5% discount for 1 course
+                        } else if (existingCourse.length == 2) {
+                          discount = (totalPrice * 10) /
+                              100; // 10% discount for 2 courses
+                        } else if (existingCourse.length >= 3) {
+                          discount = (totalPrice * 20) /
+                              100; // 20% discount for 3 or more courses
+                        } else {
+                          discount =
+                              0; // No discount if none of the above conditions are met
+                        }
+                      } else {
+                        discount = 0; // No discount for new students
+                      }
+                      print('Discount: $discount');
+                    });
+
                     _totalCheckOut(context);
                   },
                   child: const Text(
@@ -597,11 +634,11 @@ class _BottomContainerState extends State<BottomContainer> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text("Discount"),
-              if (selectedCoursesList.length == 1)
+              if (existingCourse.length == 1)
                 Text("5 %")
-              else if (selectedCoursesList.length == 2)
+              else if (existingCourse.length == 2)
                 Text("10 %")
-              else if (selectedCoursesList.length >= 3)
+              else if (existingCourse.length >= 3)
                 Text("20 %")
             ],
           ),
@@ -635,10 +672,13 @@ class _BottomContainerState extends State<BottomContainer> {
                 ),
               ),
               onPressed: () {
+                setState(() {
+                  existingCourse.addAll(selectedCoursesList);
+                });
                 student.updateStudent(
                     documentId,
                     StudentModel(studentId, widget.name, widget.email,
-                        widget.phone, section, courseName));
+                        widget.phone, section, existingCourse));
 
                 Navigator.pop(context);
               },
