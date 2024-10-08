@@ -276,16 +276,8 @@ class StudentList extends StatelessWidget {
               String studentId = data['sId'];
               String studentPhone = data['phone'] ?? 'No Phone';
               String section = data['section'] ?? 'No Phone';
-              List<String> courseList;
-              if (data['courseName'] is List<String>) {
-                courseList = data['courseName'] as List<String>;
-              } else if (data['courseName'] is String) {
-                courseList = [
-                  data['courseName']
-                ]; // Wrap the single string in a list
-              } else {
-                courseList = ["No Data"];
-              }
+              List<String> courseList =
+                  List<String>.from(data['courseName'] ?? []);
 
               return Student(
                 studentId: studentId,
@@ -356,6 +348,7 @@ class Student extends StatelessWidget {
           ),
         );
         log(name);
+        log(courseName.toString());
       },
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
