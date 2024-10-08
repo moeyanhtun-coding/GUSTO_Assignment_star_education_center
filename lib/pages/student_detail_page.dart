@@ -10,8 +10,8 @@ import 'package:star_education_center/pages/courses_add_page.dart';
 import 'package:star_education_center/services/student_firestore_service.dart';
 import 'package:star_education_center/ulti.dart';
 
-final StudentFirestoreService _studentFirestoreService =
-    StudentFirestoreService();
+final StudentDatabase _studentService =
+    FirestoreStudentDatabase(); // Use Firestore implementation
 
 class StudentDetailsPage extends StatefulWidget {
   final String name;
