@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:star_education_center/models/course_model.dart';
 import 'package:uuid/uuid.dart';
@@ -14,6 +16,7 @@ class CourseFirestoreService {
       {
         'cId': 'C -' + uuid.v4(), // Generate a unique UUID string
         'courseName': course.courseName,
+        'courseDuration': course.courseDuration,
         'fees': course.fees,
         'timeStep': Timestamp.now(),
       },
@@ -25,5 +28,21 @@ class CourseFirestoreService {
     final courseStream =
         courses.orderBy('timeStep', descending: true).snapshots();
     return courseStream;
+  }
+
+  Future<DocumentSnapshot> getCourseByName(String courseName) async {
+    try {
+      QuerySnapshot querySnapshot =
+          await courses.where('courseName', isEqualTo: courseName).get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        return querySnapshot.docs.first;
+      } else {
+        throw Exception("No student found with ID: $courseName");
+      }
+    } catch (error) {
+      log("Failed to retrieve student: $error");
+      throw error;
+    }
   }
 }
