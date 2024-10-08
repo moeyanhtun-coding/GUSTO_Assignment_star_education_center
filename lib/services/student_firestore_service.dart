@@ -1,19 +1,31 @@
 import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:star_education_center/models/student_model.dart';
 import 'package:uuid/uuid.dart';
 
-final FirebaseFirestore db = FirebaseFirestore.instance;
-final Uuid uuid = Uuid(); // Create an instance of Uuid
+// Abstraction for the Student Database
+abstract class StudentDatabase {
+  Future<void> registerStudent(NewStudent student);
+  Stream<QuerySnapshot> searchStudentsByName(String searchQuery);
+  Stream<QuerySnapshot> getStudents();
+  Future<void> deleteStudent(String documentId);
+  Future<DocumentSnapshot> getStudentById(String studentId);
+  Future<void> updateStudent(String documentId, StudentModel student);
+  Future<void> updateCourseStudent(String documentId, List<String> courseName);
+}
 
-class StudentFirestoreService {
-  final CollectionReference students = db.collection("Students");
+// Firebase Firestore implementation
+class FirestoreStudentDatabase implements StudentDatabase {
+  final FirebaseFirestore db = FirebaseFirestore.instance;
+  final CollectionReference students =
+      FirebaseFirestore.instance.collection("Students");
+  final Uuid uuid = Uuid(); // For generating UUIDs
 
-  // registerStudent
+  // Register student
+  @override
   Future<void> registerStudent(NewStudent student) {
     return students.add({
-      'sId': 'S -' + uuid.v4(), // Generate a unique UUID string
+      'sId': 'S-' + uuid.v4(), // Generate unique UUID
       'name': student.name,
       'email': student.email,
       'phone': student.phone,
@@ -23,26 +35,27 @@ class StudentFirestoreService {
     });
   }
 
-// search function
+  // Search students by name
+  @override
   Stream<QuerySnapshot> searchStudentsByName(String searchQuery) {
     final studentStream = students
         .where('name', isGreaterThanOrEqualTo: searchQuery)
         .where('name', isLessThanOrEqualTo: searchQuery + '\uf8ff')
-        .orderBy('name') // Order results by name
+        .orderBy('name')
         .snapshots();
 
     log('Search Query: $searchQuery, Data: ${studentStream.toString()}');
     return studentStream;
   }
 
-  // read Student
+  // Get all students
+  @override
   Stream<QuerySnapshot> getStudents() {
-    final studentStream =
-        students.orderBy('timeStep', descending: true).snapshots();
-    return studentStream;
+    return students.orderBy('timeStep', descending: true).snapshots();
   }
 
-// delete function
+  // Delete a student
+  @override
   Future<void> deleteStudent(String documentId) {
     return students.doc(documentId).delete().then((_) {
       log("Student with ID: $documentId deleted");
@@ -51,14 +64,14 @@ class StudentFirestoreService {
     });
   }
 
+  // Get a student by their ID
+  @override
   Future<DocumentSnapshot> getStudentById(String studentId) async {
     try {
-      // Query the student by sId
       QuerySnapshot querySnapshot =
           await students.where('sId', isEqualTo: studentId).get();
 
       if (querySnapshot.docs.isNotEmpty) {
-        // Return the first document that matches the query
         return querySnapshot.docs.first;
       } else {
         throw Exception("No student found with ID: $studentId");
@@ -69,7 +82,8 @@ class StudentFirestoreService {
     }
   }
 
-  // update function
+  // Update student information
+  @override
   Future<void> updateStudent(String documentId, StudentModel student) {
     return students.doc(documentId).update({
       'name': student.name,
@@ -77,7 +91,7 @@ class StudentFirestoreService {
       'phone': student.phone,
       'section': student.section,
       'timeStep': Timestamp.now(),
-      'courseName': student.courseName // Update timestamp
+      'courseName': student.courseName
     }).then((_) {
       log("Student with ID: $documentId updated");
     }).catchError((error) {
@@ -85,10 +99,12 @@ class StudentFirestoreService {
     });
   }
 
+  // Update student's course list
+  @override
   Future<void> updateCourseStudent(String documentId, List<String> courseName) {
-    return students.doc(documentId).update({
-      'courseName': courseName // Update timestamp
-    }).then((_) {
+    return students
+        .doc(documentId)
+        .update({'courseName': courseName}).then((_) {
       log("Student with ID: $documentId updated");
     }).catchError((error) {
       log("Failed to update student: $error");
