@@ -328,8 +328,11 @@ class HomeContent extends StatelessWidget {
             TotalGroup(),
             SizedBox(height: 40),
             HeaderGroup2(),
-            SizedBox(height: 40),
-            CourseCarousel(),
+            SizedBox(height: 20),
+            SizedBox(
+              height: 550,
+              child: CourseCarousel(),
+            ),
             CertificateSection(),
             SizedBox(height: 40),
             StartLearningButton(),
@@ -546,29 +549,69 @@ class CourseCarousel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CarouselSlider(
-      options: CarouselOptions(
-        height: 431,
-        aspectRatio: 16 / 10,
-        viewportFraction: 0.9,
-        initialPage: 0,
-        enableInfiniteScroll: true,
-        reverse: false,
-        autoPlay: true,
-        autoPlayInterval: const Duration(seconds: 3),
-        autoPlayAnimationDuration: const Duration(milliseconds: 800),
-        autoPlayCurve: Curves.fastOutSlowIn,
-        enlargeCenterPage: true,
-        enlargeFactor: 0.25,
-        scrollDirection: Axis.horizontal,
-      ),
-      items: [1, 2, 3, 4, 5].map((i) {
-        return Builder(
-          builder: (BuildContext context) {
-            return CourseList();
-          },
-        );
-      }).toList(),
+    return StreamBuilder<QuerySnapshot>(
+      stream: courses.getCourses(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          List<DocumentSnapshot> coursesList = snapshot.data!.docs;
+
+          if (coursesList.isEmpty) {
+            return const Center(
+              child: Text(
+                'No Courses found',
+                style: TextStyle(
+                  color: Colors.red,
+                ),
+              ),
+            );
+          }
+
+          return CarouselSlider(
+            options: CarouselOptions(
+              viewportFraction: 1,
+              height: double.infinity,
+              initialPage: 0,
+              enableInfiniteScroll: true,
+              reverse: false,
+              autoPlay: true,
+              autoPlayInterval: const Duration(seconds: 3),
+              autoPlayAnimationDuration: const Duration(milliseconds: 800),
+              autoPlayCurve: Curves.fastOutSlowIn,
+              enlargeCenterPage: true,
+              enlargeFactor: 0.25,
+              scrollDirection: Axis.horizontal,
+            ),
+            items: coursesList.map((document) {
+              Map<String, dynamic> data =
+                  document.data() as Map<String, dynamic>;
+
+              String courseName = data['courseName'] ?? 'No Name';
+              double courseFees = data['fees'] ?? 0.0;
+              String courseDuration = data['courseDuration'] ?? 'No Data';
+
+              return Builder(
+                builder: (BuildContext context) {
+                  return Course(
+                    courseName: courseName,
+                    fees: courseFees,
+                    courseDuration: courseDuration,
+                  );
+                },
+              );
+            }).toList(),
+          );
+        } else if (snapshot.hasError) {
+          log('Error: ${snapshot.error.toString()}');
+          return const Center(
+            child: Text('Error loading courses',
+                style: TextStyle(color: Colors.red)),
+          );
+        } else {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+      },
     );
   }
 }
@@ -580,7 +623,6 @@ class CertificateSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const SizedBox(height: 60),
         const Text(
           "Certificate of Completion",
           style: TextStyle(
@@ -695,13 +737,14 @@ class CourseList extends StatelessWidget {
             return const Center(
               child: Text(
                 'No Courses found',
-                style: TextStyle(color: Colors.red),
+                style: TextStyle(
+                  color: Colors.red,
+                ),
               ),
             );
           }
 
           return ListView.builder(
-            scrollDirection: Axis.vertical,
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             itemCount: coursesList.length,
@@ -712,10 +755,12 @@ class CourseList extends StatelessWidget {
 
               String courseName = data['courseName'] ?? 'No Name';
               double courseFees = data['fees'] ?? 'No Email';
+              String courseDuration = data['courseDuration'] ?? 'No Data';
 
               return Course(
                 courseName: courseName,
                 fees: courseFees,
+                courseDuration: courseDuration,
               );
             },
           );
@@ -736,16 +781,21 @@ class CourseList extends StatelessWidget {
 }
 
 class Course extends StatelessWidget {
+  String courseDuration;
   String courseName;
   double fees;
-  Course({super.key, required this.courseName, required this.fees});
+  Course(
+      {super.key,
+      required this.courseName,
+      required this.fees,
+      required this.courseDuration});
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         Container(
-          width: MediaQuery.of(context).size.width,
+          width: 500,
           margin: const EdgeInsets.symmetric(horizontal: 5.0),
           decoration: BoxDecoration(
             border: Border.all(
@@ -767,13 +817,28 @@ class Course extends StatelessWidget {
                   child: Image.asset('assets/courses/JS.png'),
                 ),
                 margin(width: 0, height: 10),
-                Text(
-                  courseName,
-                  textAlign: TextAlign.start,
-                  style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 19,
-                      fontWeight: FontWeight.bold),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        courseName,
+                        textAlign: TextAlign.start,
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 19,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    Text(
+                      'Duration - $courseDuration months',
+                      textAlign: TextAlign.start,
+                      style: const TextStyle(
+                          color: Colors.white54,
+                          fontSize: 15,
+                          fontWeight: FontWeight.normal),
+                    ),
+                  ],
                 ),
                 margin(width: 0, height: 20),
                 Padding(
@@ -792,8 +857,7 @@ class Course extends StatelessWidget {
                         onPressed: () {},
                         style: ButtonStyle(
                           backgroundColor: WidgetStateProperty.all(
-                            Colors.blue,
-                          ), // Blue background
+                              Colors.blue), // Blue background
                           shape: WidgetStateProperty.all(
                             RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
@@ -802,20 +866,19 @@ class Course extends StatelessWidget {
                         ),
                         child: const Text(
                           "Enroll Now",
-                          style: TextStyle(
-                            color: Colors.white,
-                          ),
+                          style: TextStyle(color: Colors.white),
                         ),
                       ),
                     ],
                   ),
                 ),
-                margin(width: 0, height: 20),
+                SizedBox(
+                  height: 30,
+                )
               ],
             ),
           ),
         ),
-        margin(width: 0, height: 20)
       ],
     );
   }
