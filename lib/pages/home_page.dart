@@ -544,31 +544,59 @@ class HeaderGroup2 extends StatelessWidget {
 class CourseCarousel extends StatelessWidget {
   const CourseCarousel({super.key});
 
+  Future<List<Map<String, dynamic>>> fetchCourses() async {
+    try {
+      QuerySnapshot snapshot =
+          await FirebaseFirestore.instance.collection('Courses').get();
+      return snapshot.docs
+          .map((doc) => doc.data() as Map<String, dynamic>)
+          .toList();
+    } catch (e) {
+      print("Error fetching courses: $e");
+      return [];
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return CarouselSlider(
-      options: CarouselOptions(
-        height: 431,
-        aspectRatio: 16 / 10,
-        viewportFraction: 0.9,
-        initialPage: 0,
-        enableInfiniteScroll: true,
-        reverse: false,
-        autoPlay: true,
-        autoPlayInterval: const Duration(seconds: 3),
-        autoPlayAnimationDuration: const Duration(milliseconds: 800),
-        autoPlayCurve: Curves.fastOutSlowIn,
-        enlargeCenterPage: true,
-        enlargeFactor: 0.25,
-        scrollDirection: Axis.horizontal,
-      ),
-      items: [1, 2, 3, 4, 5].map((i) {
-        return Builder(
-          builder: (BuildContext context) {
-            return CourseList();
-          },
-        );
-      }).toList(),
+    return FutureBuilder<List<Map<String, dynamic>>>(
+      future: fetchCourses(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return const Center(child: Text('Error loading courses'));
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return const Center(child: Text('No courses available'));
+        } else {
+          var courseList = snapshot.data!;
+          return CarouselSlider(
+            options: CarouselOptions(
+              height: 490,
+              aspectRatio: 16 / 9,
+              viewportFraction: 0.87,
+              initialPage: 0,
+              enableInfiniteScroll: true,
+              autoPlay: true,
+              autoPlayInterval: const Duration(seconds: 3),
+              autoPlayAnimationDuration: const Duration(milliseconds: 800),
+              autoPlayCurve: Curves.fastOutSlowIn,
+              enlargeCenterPage: true,
+              enlargeFactor: 0.25,
+              scrollDirection: Axis.horizontal,
+            ),
+            items: courseList.map((course) {
+              return Builder(
+                builder: (BuildContext context) {
+                  return CourseList(
+                    course: course,
+                  );
+                },
+              );
+            }).toList(),
+          );
+        }
+      },
     );
   }
 }
@@ -580,7 +608,6 @@ class CertificateSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const SizedBox(height: 60),
         const Text(
           "Certificate of Completion",
           style: TextStyle(
@@ -681,57 +708,13 @@ class _DateOfBirthPickerState extends State<DateOfBirthPicker> {
 }
 
 class CourseList extends StatelessWidget {
-  const CourseList({super.key});
+  final Map<String, dynamic> course;
+
+  const CourseList({Key? key, required this.course}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<QuerySnapshot>(
-      stream: courses.getCourses(),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          List<DocumentSnapshot> coursesList = snapshot.data!.docs;
-
-          if (coursesList.isEmpty) {
-            return const Center(
-              child: Text(
-                'No Courses found',
-                style: TextStyle(color: Colors.red),
-              ),
-            );
-          }
-
-          return ListView.builder(
-            scrollDirection: Axis.vertical,
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: coursesList.length,
-            itemBuilder: (context, index) {
-              DocumentSnapshot document = coursesList[index];
-              Map<String, dynamic> data =
-                  document.data() as Map<String, dynamic>;
-
-              String courseName = data['courseName'] ?? 'No Name';
-              double courseFees = data['fees'] ?? 'No Email';
-
-              return Course(
-                courseName: courseName,
-                fees: courseFees,
-              );
-            },
-          );
-        } else if (snapshot.hasError) {
-          log('Error: ${snapshot.error.toString()}');
-          return const Center(
-            child: Text('Error loading students',
-                style: TextStyle(color: Colors.red)),
-          );
-        } else {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-      },
-    );
+    return Course(courseName: course['courseName'], fees: course['fees']);
   }
 }
 
@@ -746,6 +729,7 @@ class Course extends StatelessWidget {
       children: [
         Container(
           width: MediaQuery.of(context).size.width,
+          height: 460,
           margin: const EdgeInsets.symmetric(horizontal: 5.0),
           decoration: BoxDecoration(
             border: Border.all(
@@ -810,12 +794,10 @@ class Course extends StatelessWidget {
                     ],
                   ),
                 ),
-                margin(width: 0, height: 20),
               ],
             ),
           ),
         ),
-        margin(width: 0, height: 20)
       ],
     );
   }
