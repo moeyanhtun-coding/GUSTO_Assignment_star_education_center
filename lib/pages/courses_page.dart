@@ -233,13 +233,15 @@ class Course extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      courseName,
-                      textAlign: TextAlign.start,
-                      style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 19,
-                          fontWeight: FontWeight.bold),
+                    Expanded(
+                      child: Text(
+                        courseName,
+                        textAlign: TextAlign.start,
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 19,
+                            fontWeight: FontWeight.bold),
+                      ),
                     ),
                     Text(
                       'Duration - $courseDuration months',

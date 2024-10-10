@@ -105,8 +105,11 @@ class _CoursesAddPageState extends State<CoursesAddPage> {
   Widget _buildBody(BuildContext context) {
     return Column(
       children: [
+        margin(width: 0, height: 20),
         _header(),
+        margin(width: 0, height: 20),
         _searchBar(),
+        margin(width: 0, height: 20),
         Expanded(child: _streamCourses(context)),
       ],
     );
@@ -256,51 +259,58 @@ class _CourseEnrollState extends State<CourseEnroll> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 18.0),
-      child: Container(
-        width: double.infinity,
-        height: 120,
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.blue),
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.start,
+      child: Column(
+        children: [
+          Container(
+            width: double.infinity,
+            height: 120,
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.blue),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    widget.courseName,
-                    style: const TextStyle(
-                      color: Colors.blue,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.courseName,
+                        style: const TextStyle(
+                          color: Colors.blue,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        "Fees - ${NumberFormat('#,###').format(widget.courseFees)} MMK",
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
                   ),
-                  Text(
-                    "Fees - ${NumberFormat('#,###').format(widget.courseFees)} MMK",
-                    style: const TextStyle(
+                  IconButton(
+                    onPressed: _toggleSelection,
+                    icon: Icon(
+                      _isSelected
+                          ? Icons.check
+                          : Icons.add_shopping_cart_rounded,
                       color: Colors.white,
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
                     ),
+                    color: _isSelected ? Colors.green : Colors.blue,
                   ),
                 ],
               ),
-              IconButton(
-                onPressed: _toggleSelection,
-                icon: Icon(
-                  _isSelected ? Icons.check : Icons.add_shopping_cart_rounded,
-                  color: Colors.white,
-                ),
-                color: _isSelected ? Colors.green : Colors.blue,
-              ),
-            ],
+            ),
           ),
-        ),
+          margin(width: 0, height: 15)
+        ],
       ),
     );
   }
@@ -508,37 +518,43 @@ class _BottomContainerState extends State<BottomContainer> {
   Widget _voucherDetail() {
     return Column(
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Column(
+        for (int i = 0; i < selectedCoursesList.length; i++)
+          Container(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                for (int i = 0; i < selectedCoursesList.length; i++)
-                  Column(
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(selectedCoursesList[i]),
-                      margin(width: 0, height: 4),
-                    ],
-                  ),
-              ],
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                for (int i = 0; i < selectedCoursesList.length; i++)
-                  Column(
-                    children: [
-                      Text(
-                        '${NumberFormat('#,###').format(selectedPriceList[i])} MMK',
+                      Column(
+                        children: [
+                          Text(selectedCoursesList[i]),
+                          margin(width: 0, height: 4),
+                        ],
                       ),
-                      margin(width: 0, height: 4),
                     ],
                   ),
+                ),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Column(
+                        children: [
+                          Text(
+                            '${NumberFormat('#,###').format(selectedPriceList[i])} MMK',
+                          ),
+                          margin(width: 0, height: 4),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
-          ],
-        ),
+          ),
       ],
     );
   }

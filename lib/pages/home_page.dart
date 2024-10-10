@@ -328,8 +328,11 @@ class HomeContent extends StatelessWidget {
             TotalGroup(),
             SizedBox(height: 40),
             HeaderGroup2(),
-            SizedBox(height: 40),
-            CourseCarousel(),
+            SizedBox(height: 20),
+            SizedBox(
+              height: 550,
+              child: CourseCarousel(),
+            ),
             CertificateSection(),
             SizedBox(height: 40),
             StartLearningButton(),
@@ -714,14 +717,22 @@ class CourseList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Course(courseName: course['courseName'], fees: course['fees']);
+    return Course(
+        courseName: course['courseName'],
+        fees: course['fees'],
+        courseDuration: course['courseDuration']);
   }
 }
 
 class Course extends StatelessWidget {
+  String courseDuration;
   String courseName;
   double fees;
-  Course({super.key, required this.courseName, required this.fees});
+  Course(
+      {super.key,
+      required this.courseName,
+      required this.fees,
+      required this.courseDuration});
 
   @override
   Widget build(BuildContext context) {
@@ -751,13 +762,28 @@ class Course extends StatelessWidget {
                   child: Image.asset('assets/courses/JS.png'),
                 ),
                 margin(width: 0, height: 10),
-                Text(
-                  courseName,
-                  textAlign: TextAlign.start,
-                  style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 19,
-                      fontWeight: FontWeight.bold),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        courseName,
+                        textAlign: TextAlign.start,
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 19,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    Text(
+                      'Duration - $courseDuration months',
+                      textAlign: TextAlign.start,
+                      style: const TextStyle(
+                          color: Colors.white54,
+                          fontSize: 15,
+                          fontWeight: FontWeight.normal),
+                    ),
+                  ],
                 ),
                 margin(width: 0, height: 20),
                 Padding(
@@ -776,8 +802,7 @@ class Course extends StatelessWidget {
                         onPressed: () {},
                         style: ButtonStyle(
                           backgroundColor: WidgetStateProperty.all(
-                            Colors.blue,
-                          ), // Blue background
+                              Colors.blue), // Blue background
                           shape: WidgetStateProperty.all(
                             RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
@@ -786,9 +811,7 @@ class Course extends StatelessWidget {
                         ),
                         child: const Text(
                           "Enroll Now",
-                          style: TextStyle(
-                            color: Colors.white,
-                          ),
+                          style: TextStyle(color: Colors.white),
                         ),
                       ),
                     ],
