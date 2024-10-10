@@ -334,6 +334,35 @@ class BottomContainer extends StatefulWidget {
 }
 
 class _BottomContainerState extends State<BottomContainer> {
+  double calculateDiscount(
+    List<String> selectedCoursesList,
+    List<String> existingCourse,
+    double totalPrice,
+  ) {
+    double discount = 0;
+
+    if (selectedCoursesList.isNotEmpty && existingCourse.isEmpty) {
+      // New student - full fee
+      discount = 0;
+    } else if (existingCourse.isNotEmpty) {
+      // Returning student
+      if (existingCourse.length == 1) {
+        discount = (totalPrice * 5) / 100; // 5% discount for 1 course
+      } else if (existingCourse.length == 2) {
+        discount = (totalPrice * 10) / 100; // 10% discount for 2 courses
+      } else if (existingCourse.length >= 3) {
+        discount =
+            (totalPrice * 20) / 100; // 20% discount for 3 or more courses
+      } else {
+        discount = 0; // No discount if none of the above conditions are met
+      }
+    } else {
+      discount = 0; // No discount for new students
+    }
+
+    return discount;
+  }
+
   void _totalCheckOut(BuildContext context) {
     showDialog(
       context: context,
@@ -420,28 +449,8 @@ class _BottomContainerState extends State<BottomContainer> {
                   ),
                   onPressed: () {
                     setState(() {
-                      if (selectedCoursesList.isNotEmpty &&
-                          existingCourse.isEmpty) {
-                        // New student - full fee
-                        discount = 0;
-                      } else if (existingCourse.isNotEmpty) {
-                        // Returning student
-                        if (existingCourse.length == 1) {
-                          discount = (totalPrice * 5) /
-                              100; // 5% discount for 1 course
-                        } else if (existingCourse.length == 2) {
-                          discount = (totalPrice * 10) /
-                              100; // 10% discount for 2 courses
-                        } else if (existingCourse.length >= 3) {
-                          discount = (totalPrice * 20) /
-                              100; // 20% discount for 3 or more courses
-                        } else {
-                          discount =
-                              0; // No discount if none of the above conditions are met
-                        }
-                      } else {
-                        discount = 0; // No discount for new students
-                      }
+                      discount = calculateDiscount(
+                          selectedCoursesList, existingCourse, totalPrice);
                       print('Discount: $discount');
                     });
 
