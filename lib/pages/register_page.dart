@@ -18,6 +18,7 @@ class RegisterPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        backgroundColor: const Color.fromARGB(255, 0, 17, 32),
         body: Padding(
           padding: const EdgeInsets.all(10.0),
           child: Column(
@@ -79,7 +80,17 @@ class RegisterPage extends StatelessWidget {
   Widget _registerButton() {
     return SizedBox(
       width: double.infinity,
+      height: 50,
       child: ElevatedButton(
+        style: ButtonStyle(
+          backgroundColor: WidgetStatePropertyAll(Colors.blue),
+          foregroundColor: WidgetStatePropertyAll(Colors.white),
+          shape: WidgetStatePropertyAll(
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+          ),
+        ),
         onPressed: () {},
         child: const Text("Register"),
       ),
@@ -99,13 +110,17 @@ class RegisterPage extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Text("Already have an account? "),
+        const Text(
+          "Already have an account ? ",
+          style: TextStyle(color: Colors.white),
+        ),
         GestureDetector(
           onTap: () => Get.offAllNamed('login'),
           child: const Text(
             "Sing In",
             style: TextStyle(
               fontWeight: FontWeight.bold,
+              color: Colors.blue,
             ),
           ),
         )
