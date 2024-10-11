@@ -1,10 +1,7 @@
-import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:get/route_manager.dart';
 import 'package:intl/intl.dart';
 import 'package:star_education_center/models/course_model.dart';
 import 'package:star_education_center/models/student_model.dart';
@@ -27,7 +24,7 @@ int _currentIndex = 0;
 
 final StudentDatabase _studentService = FirestoreStudentDatabase();
 final CourseFirestoreService courseService = CourseFirestoreService();
-final Uuid uuid = Uuid();
+const Uuid uuid = Uuid();
 
 List<String> certificateText = [
   "Both Physical & Digital Certificates for All Students",
@@ -53,13 +50,14 @@ class _HomePageState extends State<HomePage> {
     const StudentPage(),
   ];
 
-  TextEditingController _nameController = TextEditingController();
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
 
-  TextEditingController _courseNameController = TextEditingController();
-  TextEditingController _courseFeesContorller = TextEditingController();
-  TextEditingController _courseDurationController = TextEditingController();
+  final TextEditingController _courseNameController = TextEditingController();
+  final TextEditingController _courseFeesContorller = TextEditingController();
+  final TextEditingController _courseDurationController =
+      TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -275,16 +273,32 @@ class _HomePageState extends State<HomePage> {
   AppBar _buildAppBar() {
     return AppBar(
       backgroundColor: Colors.black,
-      title: const Text(
-        "Home Page",
-        style: TextStyle(color: Colors.white),
-      ),
+      title: _buildTitle(),
       actions: [
         IconButton(
           onPressed: () {},
           icon: const Icon(Icons.search, size: 30, color: Colors.white),
         ),
       ],
+    );
+  }
+
+  Widget _buildTitle() {
+    switch (_currentIndex) {
+      case 1:
+        return _header("Courses Page");
+      // Add more cases here if needed for other indexes
+      case 2:
+        return _header("Students Page");
+      default:
+        return _header("Home Page"); // Fallback title if index doesn't match
+    }
+  }
+
+  Widget _header(String title) {
+    return Text(
+      title,
+      style: TextStyle(color: Colors.white),
     );
   }
 
@@ -575,9 +589,8 @@ class CourseCarousel extends StatelessWidget {
           var courseList = snapshot.data!;
           return CarouselSlider(
             options: CarouselOptions(
-              height: 490,
-              aspectRatio: 16 / 9,
-              viewportFraction: 0.87,
+              height: 540,
+              viewportFraction: 1,
               initialPage: 0,
               enableInfiniteScroll: true,
               autoPlay: true,
@@ -739,8 +752,7 @@ class Course extends StatelessWidget {
     return Column(
       children: [
         Container(
-          width: MediaQuery.of(context).size.width,
-          height: 460,
+          height: 490,
           margin: const EdgeInsets.symmetric(horizontal: 5.0),
           decoration: BoxDecoration(
             border: Border.all(
