@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
 import 'package:intl/intl.dart';
 import 'package:star_education_center/models/student_model.dart';
-import 'package:star_education_center/pages/home_page.dart';
-import 'package:star_education_center/pages/student_page.dart';
 import 'package:star_education_center/services/course_firestore_service.dart';
 import 'package:star_education_center/services/student_firestore_service.dart';
 import 'package:star_education_center/ulti.dart';
