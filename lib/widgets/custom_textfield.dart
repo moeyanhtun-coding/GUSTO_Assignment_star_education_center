@@ -10,6 +10,7 @@ Widget customTextField({
   EdgeInsetsGeometry? iconPadding,
 }) {
   return TextFormField(
+    style: TextStyle(color: Colors.white),
     controller: controller,
     obscureText: secure,
     keyboardType: keyboardType,
@@ -17,11 +18,30 @@ Widget customTextField({
       prefixIcon: icon != null
           ? Padding(
               padding: iconPadding ?? const EdgeInsets.all(0),
-              child: Icon(icon),
+              child: Icon(
+                icon,
+                color: Colors.blue,
+              ),
             )
           : null,
       labelText: label,
-      border: const OutlineInputBorder(),
+      labelStyle: TextStyle(color: Colors.blue),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide:
+            const BorderSide(color: Colors.blue), // Default border color
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: const BorderSide(
+          color: Colors.blue,
+        ), // Color when field is not focused
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: const BorderSide(
+            color: Colors.white), // Color when field is focused
+      ),
     ),
   );
 }
