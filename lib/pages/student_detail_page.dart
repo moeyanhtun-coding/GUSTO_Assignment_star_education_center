@@ -1,11 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:intl/intl.dart';
-
 import 'package:star_education_center/pages/courses_add_page.dart';
 import 'package:star_education_center/services/course_firestore_service.dart';
 import 'package:star_education_center/services/student_firestore_service.dart';
@@ -182,10 +178,13 @@ class _StudentDetailsPageState extends State<StudentDetailsPage> {
   }
 
   Widget _enrolled() {
-    return Text(
+    return const Text(
       "Enrolled Courses",
       style: TextStyle(
-          color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 26),
+        color: Colors.blue,
+        fontWeight: FontWeight.bold,
+        fontSize: 26,
+      ),
     );
   }
 
