@@ -2,7 +2,6 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:star_education_center/models/student_model.dart';
-import 'package:star_education_center/pages/home_page.dart';
 import 'package:star_education_center/pages/student_detail_page.dart';
 import 'package:star_education_center/services/student_firestore_service.dart';
 
