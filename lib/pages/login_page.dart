@@ -19,6 +19,7 @@ class LoginPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        backgroundColor: const Color.fromARGB(255, 0, 17, 32),
         body: Padding(
           padding: const EdgeInsets.all(10.0),
           child: Column(
@@ -67,7 +68,17 @@ class LoginPage extends StatelessWidget {
   Widget _loginButton(context) {
     return SizedBox(
       width: double.infinity,
+      height: 50,
       child: ElevatedButton(
+        style: ButtonStyle(
+          backgroundColor: WidgetStatePropertyAll(Colors.blue),
+          foregroundColor: WidgetStatePropertyAll(Colors.white),
+          shape: WidgetStatePropertyAll(
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+          ),
+        ),
         onPressed: () {
           // Hardcoded email and password for authentication
           if (emailController.text == "admin@gmail.com" &&
@@ -80,7 +91,13 @@ class LoginPage extends StatelessWidget {
             );
           }
         },
-        child: const Text("Login"),
+        child: const Text(
+          "Login",
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 18,
+          ),
+        ),
       ),
     );
   }
@@ -90,14 +107,15 @@ class LoginPage extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Text("Don't have an account? "),
+        const Text(
+          "Don't have an account ? ",
+          style: TextStyle(color: Colors.white),
+        ),
         GestureDetector(
           onTap: () => Get.offAll(RegisterPage()),
           child: const Text(
             "Register Now",
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
           ),
         )
       ],
