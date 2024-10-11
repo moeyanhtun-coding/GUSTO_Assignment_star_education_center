@@ -63,13 +63,15 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Login Successful.'),
-          shape: Border(left: BorderSide(width: 2)),
-          backgroundColor: Colors.blue,
-        ),
-      );
+      _currentIndex == 0
+          ? ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Login Successful.'),
+                shape: Border(left: BorderSide(width: 2)),
+                backgroundColor: Colors.blue,
+              ),
+            )
+          : _nothing();
     });
   }
 
