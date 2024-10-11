@@ -1,5 +1,7 @@
 // Import section //
 import 'package:flutter/material.dart';
+import 'package:star_education_center/pages/home_page.dart';
+import 'package:star_education_center/pages/register_page.dart';
 import 'package:star_education_center/ulti.dart';
 import 'package:star_education_center/widgets/custom_textfield.dart';
 import 'package:get/route_manager.dart';
@@ -53,7 +55,7 @@ class LoginPage extends StatelessWidget {
         ),
         margin(width: 0, height: 20),
         // Login Button //
-        _loginButton(),
+        _loginButton(context),
         margin(width: 0, height: 20),
         // Sign Up Section //
         _signUp()
@@ -61,13 +63,22 @@ class LoginPage extends StatelessWidget {
     );
   }
 
-  // Login Button Widget //
-  Widget _loginButton() {
+  // Login Button Widget with authentication logic //
+  Widget _loginButton(context) {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
         onPressed: () {
-          Get.offAllNamed('/home');
+          // Hardcoded email and password for authentication
+          if (emailController.text == "admin@gmail.com" &&
+              passwordController.text == "admin@123?") {
+            Get.offAll(HomePage()); // Navigate to home page on successful login
+          } else {
+            // Show error message if authentication fails
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Invalid email or password')),
+            );
+          }
         },
         child: const Text("Login"),
       ),
@@ -81,7 +92,7 @@ class LoginPage extends StatelessWidget {
       children: [
         const Text("Don't have an account? "),
         GestureDetector(
-          onTap: () => Get.offAllNamed('/register'),
+          onTap: () => Get.offAll(RegisterPage()),
           child: const Text(
             "Register Now",
             style: TextStyle(
