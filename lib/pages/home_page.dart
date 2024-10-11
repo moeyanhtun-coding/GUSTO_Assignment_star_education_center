@@ -60,6 +60,20 @@ class _HomePageState extends State<HomePage> {
       TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Login Successful.'),
+          shape: Border(left: BorderSide(width: 2)),
+          backgroundColor: Colors.blue,
+        ),
+      );
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     void newStudent() {
       showDialog(
