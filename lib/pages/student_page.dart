@@ -8,7 +8,7 @@ import 'package:star_education_center/services/student_firestore_service.dart';
 final StudentDatabase _studentService = FirestoreStudentDatabase();
 
 class StudentPage extends StatefulWidget {
-  const StudentPage({key});
+  const StudentPage({super.key});
 
   @override
   State<StudentPage> createState() => _StudentPageState();
@@ -179,7 +179,7 @@ class _StudentPageState extends State<StudentPage> {
 
 class SearchBar extends StatelessWidget {
   final Function(String) onChanged;
-  const SearchBar({key, required this.onChanged});
+  const SearchBar({super.key, required this.onChanged});
 
   @override
   Widget build(BuildContext context) {
@@ -209,7 +209,7 @@ class SearchBar extends StatelessWidget {
 }
 
 class Header extends StatelessWidget {
-  const Header({key});
+  const Header({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -242,7 +242,7 @@ class StudentList extends StatelessWidget {
       updateStudent; // Define the updateStudent function type
 
   const StudentList(
-      {key, required this.searchString, required this.updateStudent});
+      {super.key, required this.searchString, required this.updateStudent});
 
   @override
   Widget build(BuildContext context) {
@@ -321,7 +321,7 @@ class Student extends StatelessWidget {
   final String phone;
 
   const Student({
-    key,
+    super.key,
     required this.name,
     required this.email,
     required this.documentId,
