@@ -5,7 +5,6 @@ import 'package:star_education_center/firebase_options.dart';
 import 'package:star_education_center/pages/home_page.dart';
 import 'package:star_education_center/pages/login_page.dart';
 import 'package:star_education_center/pages/register_page.dart';
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -22,7 +21,7 @@ final routes = [
 ];
 
 class MyApp extends StatelessWidget {
-  const MyApp({key});
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
