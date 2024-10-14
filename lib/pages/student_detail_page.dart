@@ -39,7 +39,7 @@ class StudentDetailsPage extends StatefulWidget {
 class _StudentDetailsPageState extends State<StudentDetailsPage> {
   @override
   void initState() {
-    initState();
+    super.initState();
   }
 
   @override
@@ -230,7 +230,7 @@ class _StudentDetailsPageState extends State<StudentDetailsPage> {
 
 class CourseList extends StatelessWidget {
   final List<String> coruseList;
-  const CourseList({key, required this.coruseList});
+  const CourseList({super.key, required this.coruseList});
 
   @override
   Widget build(BuildContext context) {
@@ -262,7 +262,7 @@ class _CourseState extends State<Course> {
 
   @override
   void initState() {
-    initState();
+    super.initState();
     fetchCourseDuration(); // Fetch course duration on widget initialization
   }
 
