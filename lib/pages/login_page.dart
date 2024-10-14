@@ -12,7 +12,7 @@ class LoginPage extends StatelessWidget {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
-  LoginPage({super.key});
+  LoginPage({key});
 
   @override
   // Build method section //
