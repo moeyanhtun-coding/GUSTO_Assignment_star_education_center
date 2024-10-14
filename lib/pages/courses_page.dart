@@ -11,7 +11,7 @@ import 'package:star_education_center/ulti.dart';
 final CourseFirestoreService courses = CourseFirestoreService();
 
 class CoursesPage extends StatefulWidget {
-  const CoursesPage({super.key});
+  const CoursesPage({key});
 
   @override
   State<CoursesPage> createState() => _CoursesPageState();
@@ -47,7 +47,7 @@ class _CoursesPageState extends State<CoursesPage> {
 }
 
 class Header1 extends StatelessWidget {
-  const Header1({super.key});
+  const Header1({key});
 
   @override
   Widget build(BuildContext context) {
@@ -75,7 +75,7 @@ class Header1 extends StatelessWidget {
 }
 
 class Header2 extends StatelessWidget {
-  const Header2({super.key});
+  const Header2({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -99,7 +99,7 @@ class Header2 extends StatelessWidget {
 }
 
 class SearchBar extends StatelessWidget {
-  const SearchBar({super.key});
+  const SearchBar({key});
 
   @override
   Widget build(BuildContext context) {
@@ -136,7 +136,7 @@ class SearchBar extends StatelessWidget {
 }
 
 class CourseList extends StatelessWidget {
-  const CourseList({super.key});
+  const CourseList({key});
 
   @override
   Widget build(BuildContext context) {
@@ -198,7 +198,7 @@ class Course extends StatelessWidget {
   String courseName;
   double fees;
   Course(
-      {super.key,
+      {key,
       required this.courseName,
       required this.fees,
       required this.courseDuration});
