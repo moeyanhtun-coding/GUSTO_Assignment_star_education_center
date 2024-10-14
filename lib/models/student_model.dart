@@ -8,50 +8,46 @@ class StudentModel {
   String section;
   List<String> courseName;
 
-  // Constructor: _sId will be auto-generated if not provided
   StudentModel(String? sId, this.name, this.email, this.phone, this.section,
       this.courseName)
       : _sId = sId ?? Uuid().v4();
-
-  // Getter for _sId (optional if you need access to the id)
-  String get sId => _sId;
 }
 
 class NewStudent extends StudentModel {
-  static num discount = 5; // Remove @override because discount is static
+  @override
+  static num discount = 5;
   NewStudent(
-    String? sId, // sId can be nullable
-    String name,
-    String email,
-    String phone,
-    String section,
-    List<String> courseName,
-  ) : super(sId, name, email, phone, section,
-            courseName); // Use super to pass parameters
+    super.sId,
+    super.name,
+    super.email,
+    super.phone,
+    super.section,
+    super.courseName,
+  );
 }
 
 class PremiumStudent extends StudentModel {
-  static num discount = 10; // Remove @override because discount is static
+  @override
+  static num discount = 10;
   PremiumStudent(
-    String? sId,
-    String name,
-    String email,
-    String phone,
-    String section,
-    List<String> courseName, // Fixed: courseName instead of courseId
-  ) : super(sId, name, email, phone, section,
-            courseName); // Use super to pass parameters
+    super.sId,
+    super.name,
+    super.email,
+    super.phone,
+    super.section,
+    super.courseId,
+  );
 }
 
 class PlatinumStudent extends StudentModel {
-  static num discount = 15; // Remove @override because discount is static
+  @override
+  static num discount = 10;
   PlatinumStudent(
-    String? sId,
-    String name,
-    String email,
-    String phone,
-    String section,
-    List<String> courseName,
-  ) : super(sId, name, email, phone, section,
-            courseName); // Use super to pass parameters
+    super.sId,
+    super.name,
+    super.email,
+    super.phone,
+    super.section,
+    super.courseName,
+  );
 }
