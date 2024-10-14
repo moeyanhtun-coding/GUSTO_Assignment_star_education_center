@@ -11,7 +11,7 @@ class RegisterPage extends StatelessWidget {
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
 
-  RegisterPage({super.key});
+  RegisterPage({key});
 
   @override
   // Build method section //
