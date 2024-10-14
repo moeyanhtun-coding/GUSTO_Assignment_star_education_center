@@ -25,6 +25,14 @@ class LoginPage extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              Text(
+                "Star Education Center",
+                style: TextStyle(
+                    color: Colors.blue,
+                    fontSize: 35,
+                    fontWeight: FontWeight.bold),
+              ),
+              margin(width: 0, height: 20),
               _loginForm(context),
             ],
           ),
