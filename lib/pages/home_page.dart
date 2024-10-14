@@ -37,7 +37,7 @@ List<String> certificateText = [
 ];
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  const HomePage({key});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -61,7 +61,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
-    super.initState();
+    initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _currentIndex == 0
           ? ScaffoldMessenger.of(context).showSnackBar(
@@ -340,7 +340,7 @@ class _HomePageState extends State<HomePage> {
 }
 
 class HomeContent extends StatelessWidget {
-  const HomeContent({super.key});
+  const HomeContent({key});
 
   @override
   Widget build(BuildContext context) {
@@ -375,7 +375,7 @@ class HomeContent extends StatelessWidget {
 }
 
 class HeaderGroup extends StatelessWidget {
-  const HeaderGroup({super.key});
+  const HeaderGroup({key});
 
   @override
   Widget build(BuildContext context) {
@@ -398,7 +398,7 @@ class HeaderGroup extends StatelessWidget {
 }
 
 class EnrollNowButton extends StatelessWidget {
-  const EnrollNowButton({super.key});
+  const EnrollNowButton({key});
 
   @override
   Widget build(BuildContext context) {
@@ -435,7 +435,7 @@ class EnrollNowButton extends StatelessWidget {
 }
 
 class PageImage extends StatelessWidget {
-  const PageImage({super.key});
+  const PageImage({key});
 
   @override
   Widget build(BuildContext context) {
@@ -448,7 +448,7 @@ class PageImage extends StatelessWidget {
 }
 
 class TotalGroup extends StatelessWidget {
-  const TotalGroup({super.key});
+  const TotalGroup({key});
 
   @override
   Widget build(BuildContext context) {
@@ -510,7 +510,7 @@ class TotalCategory extends StatelessWidget {
   final String name;
 
   const TotalCategory({
-    super.key,
+    key,
     required this.icon,
     required this.total,
     required this.name,
@@ -545,7 +545,7 @@ class TotalCategory extends StatelessWidget {
 }
 
 class HeaderGroup2 extends StatelessWidget {
-  const HeaderGroup2({super.key});
+  const HeaderGroup2({key});
 
   @override
   Widget build(BuildContext context) {
@@ -575,7 +575,7 @@ class HeaderGroup2 extends StatelessWidget {
 }
 
 class CourseCarousel extends StatelessWidget {
-  const CourseCarousel({super.key});
+  const CourseCarousel({key});
 
   Future<List<Map<String, dynamic>>> fetchCourses() async {
     try {
@@ -634,7 +634,7 @@ class CourseCarousel extends StatelessWidget {
 }
 
 class CertificateSection extends StatelessWidget {
-  const CertificateSection({super.key});
+  const CertificateSection({key});
 
   @override
   Widget build(BuildContext context) {
@@ -667,7 +667,7 @@ class CertificateSection extends StatelessWidget {
 }
 
 class StartLearningButton extends StatelessWidget {
-  const StartLearningButton({super.key});
+  const StartLearningButton({key});
 
   @override
   Widget build(BuildContext context) {
@@ -758,7 +758,7 @@ class Course extends StatelessWidget {
   String courseName;
   double fees;
   Course(
-      {super.key,
+      {key,
       required this.courseName,
       required this.fees,
       required this.courseDuration});
