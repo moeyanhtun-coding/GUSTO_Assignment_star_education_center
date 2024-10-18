@@ -5,7 +5,7 @@ import 'package:uuid/uuid.dart';
 
 // Abstraction for the Student Database
 abstract class StudentDatabase {
-  Future<void> registerStudent(NewStudent student);
+  Future<void> registerStudent(StudentModel student);
   Stream<QuerySnapshot> searchStudentsByName(String searchQuery);
   Stream<QuerySnapshot> getStudents();
   Future<void> deleteStudent(String documentId);
@@ -23,7 +23,7 @@ class FirestoreStudentDatabase implements StudentDatabase {
 
   // Register student
   @override
-  Future<void> registerStudent(NewStudent student) {
+  Future<void> registerStudent(StudentModel student) {
     return students.add({
       'sId': 'S-' + uuid.v4(), // Generate unique UUID
       'name': student.name,
