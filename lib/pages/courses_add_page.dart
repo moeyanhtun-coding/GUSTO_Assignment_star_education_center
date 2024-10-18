@@ -8,6 +8,19 @@ import 'package:star_education_center/services/course_firestore_service.dart';
 import 'package:star_education_center/services/student_firestore_service.dart';
 import 'package:star_education_center/ulti.dart';
 
+// Initialize the dependencies
+final FirebaseFirestore _db = FirebaseFirestore.instance;
+final UuidService _uuidService =
+    DefaultUuidService(); // Using the default implementation
+final LoggerService _loggerService = LoggerService();
+
+// Create an instance of CourseFirestoreService with the required dependencies
+final CourseFirestoreService _coursesService = CourseFirestoreService(
+  db: _db,
+  uuidService: _uuidService,
+  loggerService: _loggerService,
+);
+
 List<String> selectedCoursesList = [];
 List<String> existingCourse = [];
 List<double> selectedPriceList = [];
@@ -41,7 +54,6 @@ class CoursesAddPage extends StatefulWidget {
 
 class _CoursesAddPageState extends State<CoursesAddPage> {
   // Use Firestore implementation
-  final CourseFirestoreService _coursesService = CourseFirestoreService();
 
   @override
   void initState() {
@@ -631,9 +643,16 @@ class _BottomContainerState extends State<BottomContainer> {
                   existingCourse.addAll(selectedCoursesList);
                 });
                 _studentService.updateStudent(
-                    documentId,
-                    StudentModel(studentId, widget.name, widget.email,
-                        widget.phone, section, existingCourse));
+                  documentId,
+                  StudentModel(
+                    studentId,
+                    widget.name,
+                    widget.email,
+                    widget.phone,
+                    section,
+                    existingCourse,
+                  ),
+                );
 
                 Navigator.pop(context);
                 Get.toNamed("/home");
