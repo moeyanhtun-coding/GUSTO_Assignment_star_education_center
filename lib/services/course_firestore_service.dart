@@ -16,11 +16,11 @@ abstract class UuidService {
 }
 
 class DefaultUuidService implements UuidService {
-  final Uuid _uuid = Uuid();
+  final Uuid _uuid = const Uuid();
 
   @override
   String generateUuid() {
-    return 'C -' + _uuid.v4(); // Prepend "C -" to the UUID
+    return 'C -${_uuid.v4()}'; // Prepend "C -" to the UUID
   }
 }
 
