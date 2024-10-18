@@ -1,14 +1,24 @@
 import 'dart:developer';
-import 'dart:ffi';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:star_education_center/pages/home_page.dart';
 import 'package:star_education_center/services/course_firestore_service.dart';
 import 'package:star_education_center/ulti.dart';
+import 'package:uuid/uuid.dart';
 
-final CourseFirestoreService courses = CourseFirestoreService();
+// Initialize the dependencies
+final FirebaseFirestore _db = FirebaseFirestore.instance;
+final UuidService _uuidService =
+    DefaultUuidService(); // Using the default implementation
+final LoggerService _loggerService = LoggerService();
+final Uuid uuid = Uuid();
+
+// Create an instance of CourseFirestoreService with the required dependencies
+final CourseFirestoreService _coursesService = CourseFirestoreService(
+  db: _db,
+  uuidService: _uuidService,
+  loggerService: _loggerService,
+);
 
 class CoursesPage extends StatefulWidget {
   const CoursesPage({super.key});
@@ -141,7 +151,7 @@ class CourseList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: courses.getCourses(),
+      stream: _coursesService.getCourses(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           List<DocumentSnapshot> coursesList = snapshot.data!.docs;
