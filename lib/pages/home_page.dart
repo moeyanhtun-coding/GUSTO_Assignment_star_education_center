@@ -27,8 +27,21 @@ int currentTabIndex =
 
 // Firebase services for handling data
 final StudentDatabase studentDatabase = FirestoreStudentDatabase();
-final CourseFirestoreService courseService = CourseFirestoreService();
+
+// Initialize the dependencies
+final FirebaseFirestore _db = FirebaseFirestore.instance;
+final UuidService _uuidService =
+    DefaultUuidService(); // Using the default implementation
+final LoggerService _loggerService = LoggerService();
+
+// Create an instance of CourseFirestoreService with the required dependencies
+final CourseFirestoreService _coursesService = CourseFirestoreService(
+  db: _db,
+  uuidService: _uuidService,
+  loggerService: _loggerService,
+);
 const Uuid uuidGenerator = Uuid(); // For generating unique IDs
+final Uuid uuid = Uuid();
 
 // Certificate description for UI display
 List<String> certificateDescription = [
@@ -165,17 +178,21 @@ class _HomePageState extends State<HomePage> {
                         studentPhone = phoneController.text;
                         studentEmail = emailController.text;
                         studentStartDate = _dateController.text;
-                        String studentId = uuid.v4();
+
+                        // Ensure uuid is initialized
+                        String studentId = uuid.v4(); // Generate unique ID
+
                         List<String> courseId = [];
 
                         // Method to create and save a new student in Firebase
                         studentDatabase.registerStudent(NewStudent(
-                            studentId,
-                            studentName,
-                            studentEmail,
-                            studentPhone,
-                            studentStartDate,
-                            courseId));
+                          studentId,
+                          studentName,
+                          studentEmail,
+                          studentPhone,
+                          studentStartDate,
+                          courseId,
+                        ));
 
                         nameController.clear();
                         phoneController.clear();
@@ -263,7 +280,7 @@ class _HomePageState extends State<HomePage> {
                     String courseId = uuid.v4();
 
                     // Method to create and save a new course in Firebase
-                    courseService.createCourse(CourseModel(
+                    _coursesService.createCourse(CourseModel(
                         courseId, courseName, courseFees, courseDuration));
 
                     courseNameController.clear();
