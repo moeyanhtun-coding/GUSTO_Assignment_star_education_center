@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:star_education_center/models/student_model.dart';
 import 'package:star_education_center/pages/student_detail_page.dart';
 import 'package:star_education_center/services/student_firestore_service.dart';
+import 'package:star_education_center/ulti.dart';
 
 final StudentDatabase _studentService = FirestoreStudentDatabase();
 
@@ -78,7 +79,7 @@ class _StudentPageState extends State<StudentPage> {
                 controller: _dateController,
                 readOnly: true,
                 decoration: InputDecoration(
-                  label: const Text("Date of Birth"),
+                  label: const Text("Start Date"),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(15),
                   ),
@@ -100,41 +101,62 @@ class _StudentPageState extends State<StudentPage> {
                 },
               ),
               const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  String name = _nameController.text;
-                  String email = _emailController.text;
-                  String phone = _phoneController.text;
-                  String date = _dateController.text;
-                  List<String> courseName = [];
-
-                  // Update the student details
-                  _studentService.updateStudent(
-                    documentId, // Pass the documentId of the student
-                    StudentModel(studentId, name, email, phone, date,
-                        courseName), // Pass the updated StudentModel
-                  );
-
-                  // Clear the text fields
-                  _nameController.clear();
-                  _phoneController.clear();
-                  _emailController.clear();
-                  _dateController.clear();
-
-                  Navigator.pop(context); // Close the dialog
-                },
-                style: ButtonStyle(
-                  backgroundColor: WidgetStateProperty.all(Colors.blue),
-                  shape: WidgetStateProperty.all(
-                    RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: const Text("Cancle"),
+                    style: ButtonStyle(
+                      backgroundColor: WidgetStatePropertyAll(Colors.redAccent),
+                      foregroundColor: WidgetStateProperty.all(Colors.white),
+                      shape: WidgetStatePropertyAll(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
                     ),
                   ),
-                ),
-                child: const Text(
-                  "Update",
-                  style: TextStyle(color: Colors.white),
-                ),
+                  margin(height: 0, width: 10),
+                  ElevatedButton(
+                    onPressed: () {
+                      String name = _nameController.text;
+                      String email = _emailController.text;
+                      String phone = _phoneController.text;
+                      String date = _dateController.text;
+                      List<String> courseName = [];
+
+                      // Update the student details
+                      _studentService.updateStudent(
+                        documentId, // Pass the documentId of the student
+                        StudentModel(studentId, name, email, phone, date,
+                            courseName), // Pass the updated StudentModel
+                      );
+
+                      // Clear the text fields
+                      _nameController.clear();
+                      _phoneController.clear();
+                      _emailController.clear();
+                      _dateController.clear();
+
+                      Navigator.pop(context); // Close the dialog
+                    },
+                    style: ButtonStyle(
+                      backgroundColor: WidgetStateProperty.all(Colors.blue),
+                      shape: WidgetStateProperty.all(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                    child: const Text(
+                      "Update",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
