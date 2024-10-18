@@ -10,7 +10,18 @@ import 'package:star_education_center/ulti.dart';
 final StudentDatabase _studentService =
     FirestoreStudentDatabase(); // Use Firestore implementation
 
-final CourseFirestoreService _courseFirestoreService = CourseFirestoreService();
+// Initialize the dependencies
+final FirebaseFirestore _db = FirebaseFirestore.instance;
+final UuidService _uuidService =
+    DefaultUuidService(); // Using the default implementation
+final LoggerService _loggerService = LoggerService();
+
+// Create an instance of CourseFirestoreService with the required dependencies
+final CourseFirestoreService _coursesService = CourseFirestoreService(
+  db: _db,
+  uuidService: _uuidService,
+  loggerService: _loggerService,
+);
 
 class StudentDetailsPage extends StatefulWidget {
   final String name;
@@ -270,7 +281,7 @@ class _CourseState extends State<Course> {
   Future<void> fetchCourseDuration() async {
     try {
       DocumentSnapshot courseData =
-          await _courseFirestoreService.getCourseByName(widget.courseName);
+          await _coursesService.getCourseByName(widget.courseName);
       setState(() {
         courseDuration = courseData[
             'courseDuration']; // Assuming 'duration' is the field name
