@@ -126,36 +126,58 @@ class _HomePageState extends State<HomePage> {
                 margin(width: 0, height: 20),
                 DateOfBirthPicker(),
                 margin(width: 0, height: 20),
-                ElevatedButton(
-                  onPressed: () {
-                    name = _nameController.text;
-                    phone = _phoneController.text;
-                    email = _emailController.text;
-                    date = _dateController.text;
-                    String studentId = uuid.v4();
-                    List<String> courseId = [];
-                    _studentService.registerStudent(NewStudent(
-                        studentId, name, email, phone, date, courseId));
-
-                    _nameController.clear();
-                    _phoneController.clear();
-                    _emailController.clear();
-                    _dateController.clear();
-
-                    Navigator.pop(context);
-                  },
-                  child: Text(
-                    "Create",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  style: ButtonStyle(
-                    backgroundColor: WidgetStateProperty.all(Colors.blue),
-                    shape: WidgetStateProperty.all(
-                      RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Text("Cancle"),
+                      style: ButtonStyle(
+                        backgroundColor:
+                            WidgetStatePropertyAll(Colors.redAccent),
+                        foregroundColor: WidgetStateProperty.all(Colors.white),
+                        shape: WidgetStatePropertyAll(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
                       ),
                     ),
-                  ),
+                    margin(height: 0, width: 10),
+                    ElevatedButton(
+                      onPressed: () {
+                        name = _nameController.text;
+                        phone = _phoneController.text;
+                        email = _emailController.text;
+                        date = _dateController.text;
+                        String studentId = uuid.v4();
+                        List<String> courseId = [];
+                        _studentService.registerStudent(NewStudent(
+                            studentId, name, email, phone, date, courseId));
+
+                        _nameController.clear();
+                        _phoneController.clear();
+                        _emailController.clear();
+                        _dateController.clear();
+
+                        Navigator.pop(context);
+                      },
+                      child: Text(
+                        "Create",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      style: ButtonStyle(
+                        backgroundColor: WidgetStateProperty.all(Colors.blue),
+                        shape: WidgetStateProperty.all(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 )
               ],
             ),
