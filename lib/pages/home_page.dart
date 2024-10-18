@@ -12,21 +12,26 @@ import 'package:star_education_center/services/student_firestore_service.dart';
 import 'package:star_education_center/ulti.dart';
 import 'package:uuid/uuid.dart';
 
-String email = "";
-String phone = "";
-String name = "";
-String date = "";
-String duration = "";
+// Variables for storing user input data
+String studentEmail = "";
+String studentPhone = "";
+String studentName = "";
+String studentStartDate = "";
 
 String courseName = "";
-double fees = 0;
-int _currentIndex = 0;
+double courseFees = 0;
+String courseDuration = "";
 
-final StudentDatabase _studentService = FirestoreStudentDatabase();
+int currentTabIndex =
+    0; // To track the current selected tab in bottom navigation bar
+
+// Firebase services for handling data
+final StudentDatabase studentDatabase = FirestoreStudentDatabase();
 final CourseFirestoreService courseService = CourseFirestoreService();
-const Uuid uuid = Uuid();
+const Uuid uuidGenerator = Uuid(); // For generating unique IDs
 
-List<String> certificateText = [
+// Certificate description for UI display
+List<String> certificateDescription = [
   "Both Physical & Digital Certificates for All Students",
   "Enrolled at Star Education Center! We offer a wide",
   "range of programming and IT-related courses, with",
@@ -44,40 +49,48 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  // List of pages to navigate through the BottomNavigationBar
   final List<Widget> _pages = [
-    const HomeContent(),
-    const CoursesPage(),
-    const StudentPage(),
+    const HomeContent(), // First page - home content
+    const CoursesPage(), // Second page - courses page
+    const StudentPage(), // Third page - student page
   ];
 
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _phoneController = TextEditingController();
-
-  final TextEditingController _courseNameController = TextEditingController();
-  final TextEditingController _courseFeesContorller = TextEditingController();
-  final TextEditingController _courseDurationController =
+  // Controllers for handling text inputs
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
+  final TextEditingController courseNameController = TextEditingController();
+  final TextEditingController courseFeesController = TextEditingController();
+  final TextEditingController courseDurationController =
       TextEditingController();
 
   @override
   void initState() {
     super.initState();
+    // Show a snack bar message when the user logs in
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _currentIndex == 0
-          ? ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Login Successful.'),
-                shape: Border(left: BorderSide(width: 2)),
-                backgroundColor: Colors.blue,
-              ),
-            )
-          : _nothing();
+      if (currentTabIndex == 0) {
+        _showSnackBar('Login Successful.');
+      }
     });
+  }
+
+  // Shows a SnackBar with a custom message
+  void _showSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        shape: const Border(left: BorderSide(width: 2)),
+        backgroundColor: Colors.blue,
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     void newStudent() {
+      // Builds the form content for adding a new student
       showDialog(
         context: context,
         builder: (context) => Dialog(
@@ -93,7 +106,7 @@ class _HomePageState extends State<HomePage> {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 TextField(
-                  controller: _nameController,
+                  controller: nameController,
                   decoration: InputDecoration(
                     label: Text("Name"),
                     border: OutlineInputBorder(
@@ -103,7 +116,7 @@ class _HomePageState extends State<HomePage> {
                 ),
                 margin(width: 0, height: 20),
                 TextField(
-                  controller: _emailController,
+                  controller: emailController,
                   keyboardType: TextInputType.emailAddress,
                   decoration: InputDecoration(
                     label: Text("Email"),
@@ -114,7 +127,7 @@ class _HomePageState extends State<HomePage> {
                 ),
                 margin(width: 0, height: 20),
                 TextField(
-                  controller: _phoneController,
+                  controller: phoneController,
                   keyboardType: TextInputType.phone,
                   decoration: InputDecoration(
                     label: Text("Phone"),
@@ -148,18 +161,25 @@ class _HomePageState extends State<HomePage> {
                     margin(height: 0, width: 10),
                     ElevatedButton(
                       onPressed: () {
-                        name = _nameController.text;
-                        phone = _phoneController.text;
-                        email = _emailController.text;
-                        date = _dateController.text;
+                        studentName = nameController.text;
+                        studentPhone = phoneController.text;
+                        studentEmail = emailController.text;
+                        studentStartDate = _dateController.text;
                         String studentId = uuid.v4();
                         List<String> courseId = [];
-                        _studentService.registerStudent(NewStudent(
-                            studentId, name, email, phone, date, courseId));
 
-                        _nameController.clear();
-                        _phoneController.clear();
-                        _emailController.clear();
+                        // Method to create and save a new student in Firebase
+                        studentDatabase.registerStudent(NewStudent(
+                            studentId,
+                            studentName,
+                            studentEmail,
+                            studentPhone,
+                            studentStartDate,
+                            courseId));
+
+                        nameController.clear();
+                        phoneController.clear();
+                        emailController.clear();
                         _dateController.clear();
 
                         Navigator.pop(context);
@@ -187,6 +207,7 @@ class _HomePageState extends State<HomePage> {
     }
 
     void newCourse() {
+      // Shows the dialog to add a new course
       showDialog(
         context: context,
         builder: (context) => Dialog(
@@ -202,7 +223,7 @@ class _HomePageState extends State<HomePage> {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 TextField(
-                  controller: _courseNameController,
+                  controller: courseNameController,
                   decoration: InputDecoration(
                     label: Text("Course Name"),
                     border: OutlineInputBorder(
@@ -212,7 +233,7 @@ class _HomePageState extends State<HomePage> {
                 ),
                 margin(width: 0, height: 20),
                 TextField(
-                  controller: _courseFeesContorller,
+                  controller: courseFeesController,
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(
                     label: Text("Fees"),
@@ -223,7 +244,7 @@ class _HomePageState extends State<HomePage> {
                 ),
                 margin(width: 0, height: 20),
                 TextField(
-                  controller: _courseDurationController,
+                  controller: courseDurationController,
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(
                     label: Text("Duration"),
@@ -235,18 +256,19 @@ class _HomePageState extends State<HomePage> {
                 margin(width: 0, height: 20),
                 ElevatedButton(
                   onPressed: () {
-                    courseName = _courseNameController.text;
-                    fees = double.parse(_courseFeesContorller.text);
-                    duration = _courseDurationController.text;
+                    courseName = courseNameController.text;
+                    courseFees = double.parse(courseFeesController.text);
+                    courseDuration = courseDurationController.text;
 
                     String courseId = uuid.v4();
 
-                    courseService.createCourse(
-                        CourseModel(courseId, courseName, fees, duration));
+                    // Method to create and save a new course in Firebase
+                    courseService.createCourse(CourseModel(
+                        courseId, courseName, courseFees, courseDuration));
 
-                    _courseNameController.clear();
-                    _courseFeesContorller.clear();
-                    _courseDurationController.clear();
+                    courseNameController.clear();
+                    courseFeesController.clear();
+                    courseDurationController.clear();
 
                     Navigator.pop(context);
                   },
@@ -271,8 +293,10 @@ class _HomePageState extends State<HomePage> {
     }
 
     return Scaffold(
+      // Builds a floating action button based on the current tab
       floatingActionButton: () {
-        if (_currentIndex == 2) {
+        if (currentTabIndex == 2) {
+          // If on Student Page, show FAB to add new student
           return FloatingActionButton(
             onPressed: newStudent,
             foregroundColor: Colors.white,
@@ -282,7 +306,8 @@ class _HomePageState extends State<HomePage> {
               size: 26,
             ),
           );
-        } else if (_currentIndex == 1) {
+        } else if (currentTabIndex == 1) {
+          // If on Course Page, show FAB to add new course
           return FloatingActionButton(
             onPressed: newCourse,
             foregroundColor: Colors.white,
@@ -296,7 +321,7 @@ class _HomePageState extends State<HomePage> {
         }
       }(),
       appBar: _buildAppBar(),
-      body: _pages[_currentIndex],
+      body: _pages[currentTabIndex],
       bottomNavigationBar: SizedBox(
         height: 80,
         child: _buildBottomNavigationBar(),
@@ -308,6 +333,7 @@ class _HomePageState extends State<HomePage> {
     return Container();
   }
 
+// Builds the app bar dynamically based on the current tab
   AppBar _buildAppBar() {
     return AppBar(
       backgroundColor: Colors.black,
@@ -321,8 +347,9 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+// Returns the appropriate header based on the current page
   Widget _buildTitle() {
-    switch (_currentIndex) {
+    switch (currentTabIndex) {
       case 1:
         return _header("Courses Page");
       // Add more cases here if needed for other indexes
@@ -340,12 +367,13 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  // Builds the BottomNavigationBar and handles tab switching
   BottomNavigationBar _buildBottomNavigationBar() {
     return BottomNavigationBar(
-      currentIndex: _currentIndex,
+      currentIndex: currentTabIndex,
       onTap: (index) {
         setState(() {
-          _currentIndex = index;
+          currentTabIndex = index;
         });
       },
       items: const [
@@ -396,6 +424,7 @@ class HomeContent extends StatelessWidget {
   }
 }
 
+// HeaderGroup widget: Displays a header with two text lines
 class HeaderGroup extends StatelessWidget {
   const HeaderGroup({super.key});
 
@@ -419,6 +448,7 @@ class HeaderGroup extends StatelessWidget {
   }
 }
 
+// EnrollNowButton widget: Custom button for enrollment action
 class EnrollNowButton extends StatelessWidget {
   const EnrollNowButton({super.key});
 
@@ -456,6 +486,7 @@ class EnrollNowButton extends StatelessWidget {
   }
 }
 
+// PageImage widget: Displays an image from an SVG asset
 class PageImage extends StatelessWidget {
   const PageImage({super.key});
 
@@ -469,6 +500,7 @@ class PageImage extends StatelessWidget {
   }
 }
 
+// TotalGroup widget: Displays a row of categories with total values and icons
 class TotalGroup extends StatelessWidget {
   const TotalGroup({super.key});
 
@@ -526,6 +558,7 @@ class TotalGroup extends StatelessWidget {
   }
 }
 
+// TotalCategory widget: Displays an icon, total value, and name for a category
 class TotalCategory extends StatelessWidget {
   final IconData icon;
   final String total;
@@ -566,6 +599,7 @@ class TotalCategory extends StatelessWidget {
   }
 }
 
+// HeaderGroup2 widget: Displays a secondary header with two text lines
 class HeaderGroup2 extends StatelessWidget {
   const HeaderGroup2({super.key});
 
@@ -596,9 +630,11 @@ class HeaderGroup2 extends StatelessWidget {
   }
 }
 
+// CourseCarousel widget: Displays a carousel slider of courses
 class CourseCarousel extends StatelessWidget {
   const CourseCarousel({super.key});
 
+  // Function to fetch courses from Firebase Firestore
   Future<List<Map<String, dynamic>>> fetchCourses() async {
     try {
       QuerySnapshot snapshot =
@@ -625,6 +661,8 @@ class CourseCarousel extends StatelessWidget {
           return const Center(child: Text('No courses available'));
         } else {
           var courseList = snapshot.data!;
+
+          // Return a CarouselSlider to display the courses
           return CarouselSlider(
             options: CarouselOptions(
               height: 540,
@@ -655,6 +693,7 @@ class CourseCarousel extends StatelessWidget {
   }
 }
 
+// This widget represents the Certificate Section.
 class CertificateSection extends StatelessWidget {
   const CertificateSection({super.key});
 
@@ -668,6 +707,8 @@ class CertificateSection extends StatelessWidget {
               color: Colors.blue, fontSize: 28, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 30),
+
+        // Display a certificate image with rounded corners
         ClipRRect(
           borderRadius: BorderRadius.circular(15),
           child: Image.asset('assets/certificate/certificate.jpg', width: 380),
@@ -675,7 +716,7 @@ class CertificateSection extends StatelessWidget {
         const SizedBox(height: 20),
         Column(
           crossAxisAlignment: CrossAxisAlignment.center,
-          children: certificateText.map((text) {
+          children: certificateDescription.map((text) {
             return Text(
               text,
               style: const TextStyle(color: Colors.white),
@@ -688,6 +729,7 @@ class CertificateSection extends StatelessWidget {
   }
 }
 
+// This widget represents a custom button for "Start Learning"8
 class StartLearningButton extends StatelessWidget {
   const StartLearningButton({super.key});
 
@@ -722,8 +764,10 @@ class StartLearningButton extends StatelessWidget {
   }
 }
 
+// TextEditingController to control the date input field
 TextEditingController _dateController = TextEditingController();
 
+// This widget represents a date picker for selecting the date of birth
 class DateOfBirthPicker extends StatefulWidget {
   @override
   _DateOfBirthPickerState createState() => _DateOfBirthPickerState();
@@ -761,6 +805,7 @@ class _DateOfBirthPickerState extends State<DateOfBirthPicker> {
   }
 }
 
+// This widget represents a list of courses
 class CourseList extends StatelessWidget {
   final Map<String, dynamic> course;
 
@@ -775,6 +820,7 @@ class CourseList extends StatelessWidget {
   }
 }
 
+// This widget represents the details of a course
 class Course extends StatelessWidget {
   String courseDuration;
   String courseName;
@@ -789,6 +835,7 @@ class Course extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        // Container for course details with styling and padding
         Container(
           height: 490,
           margin: const EdgeInsets.symmetric(horizontal: 5.0),
