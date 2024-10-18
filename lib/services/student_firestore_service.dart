@@ -19,13 +19,14 @@ class FirestoreStudentDatabase implements StudentDatabase {
   final FirebaseFirestore db = FirebaseFirestore.instance;
   final CollectionReference students =
       FirebaseFirestore.instance.collection("Students");
-  final Uuid uuid = Uuid(); // For generating UUIDs
+  final Uuid uuid = const Uuid(); // For generating UUIDs
 
   // Register student
   @override
+  // SRP (Single Responsibility Principle (SRP) ) Apply
   Future<void> registerStudent(StudentModel student) {
     return students.add({
-      'sId': 'S-' + uuid.v4(), // Generate unique UUID
+      'sId': 'S-${uuid.v4()}', // Generate unique UUID
       'name': student.name,
       'email': student.email,
       'phone': student.phone,
@@ -40,7 +41,7 @@ class FirestoreStudentDatabase implements StudentDatabase {
   Stream<QuerySnapshot> searchStudentsByName(String searchQuery) {
     final studentStream = students
         .where('name', isGreaterThanOrEqualTo: searchQuery)
-        .where('name', isLessThanOrEqualTo: searchQuery + '\uf8ff')
+        .where('name', isLessThanOrEqualTo: '$searchQuery\uf8ff')
         .orderBy('name')
         .snapshots();
 
@@ -65,6 +66,7 @@ class FirestoreStudentDatabase implements StudentDatabase {
   }
 
   // Get a student by their ID
+  // SRP (Single Responsibility Principle (SRP) ) Apply
   @override
   Future<DocumentSnapshot> getStudentById(String studentId) async {
     try {
@@ -83,6 +85,7 @@ class FirestoreStudentDatabase implements StudentDatabase {
   }
 
   // Update student information
+  // SRP (Single Responsibility Principle (SRP) ) Apply
   @override
   Future<void> updateStudent(String documentId, StudentModel student) {
     return students.doc(documentId).update({
@@ -100,6 +103,7 @@ class FirestoreStudentDatabase implements StudentDatabase {
   }
 
   // Update student's course list
+  // SRP (Single Responsibility Principle (SRP) ) Apply
   @override
   Future<void> updateCourseStudent(String documentId, List<String> courseName) {
     return students
