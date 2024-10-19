@@ -6,56 +6,58 @@ void main() {
     testWidgets('Display new student dialog and input fields',
         (WidgetTester tester) async {
       // Create a MaterialApp to wrap the widget
-      await tester.pumpWidget(MaterialApp(
-        home: Scaffold(
-          floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              showDialog(
-                context: tester.element(find.byType(FloatingActionButton)),
-                builder: (context) => Dialog(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Container(
-                    padding: EdgeInsets.all(20),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        TextField(
-                          key: Key('nameField'),
-                          decoration: InputDecoration(
-                            label: Text("Name"),
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            floatingActionButton: FloatingActionButton(
+              onPressed: () {
+                showDialog(
+                  context: tester.element(find.byType(FloatingActionButton)),
+                  builder: (context) => Dialog(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Container(
+                      padding: EdgeInsets.all(20),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          const TextField(
+                            key: Key('nameField'),
+                            decoration: InputDecoration(
+                              label: Text("Name"),
+                            ),
                           ),
-                        ),
-                        SizedBox(height: 20),
-                        TextField(
-                          key: Key('emailField'),
-                          decoration: InputDecoration(
-                            label: Text("Email"),
+                          const SizedBox(height: 20),
+                          const TextField(
+                            key: Key('emailField'),
+                            decoration: InputDecoration(
+                              label: Text("Email"),
+                            ),
                           ),
-                        ),
-                        SizedBox(height: 20),
-                        TextField(
-                          key: Key('phoneField'),
-                          decoration: InputDecoration(
-                            label: Text("Phone"),
+                          const SizedBox(height: 20),
+                          const TextField(
+                            key: Key('phoneField'),
+                            decoration: InputDecoration(
+                              label: Text("Phone"),
+                            ),
                           ),
-                        ),
-                        SizedBox(height: 20),
-                        ElevatedButton(
-                          onPressed: () {},
-                          child: Text("Create"),
-                        ),
-                      ],
+                          const SizedBox(height: 20),
+                          ElevatedButton(
+                            onPressed: () {},
+                            child: const Text("Create"),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
         ),
-      ));
+      );
 
       // Verify that the FloatingActionButton is displayed
       expect(find.byType(FloatingActionButton), findsOneWidget);
