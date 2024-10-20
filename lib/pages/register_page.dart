@@ -1,7 +1,6 @@
 // Import section //
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
-import 'package:star_education_center/ulti.dart';
 import 'package:star_education_center/widgets/custom_textfield.dart';
 
 // Register Page class //
@@ -32,46 +31,62 @@ class RegisterPage extends StatelessWidget {
     );
   }
 
-  // Register Form section //
+  // Register Form section with TextField Decorator //
   Widget _registerForm(context) {
+    // Validation logic for error messages
+    String? emailError =
+        emailController.text.isEmpty ? 'Email is required' : null;
+    String? passwordError =
+        passwordController.text.isEmpty ? 'Password is required' : null;
+    String? confirmPasswordError =
+        confirmPasswordController.text != passwordController.text
+            ? 'Passwords do not match'
+            : null;
+
     return Column(
       children: [
-        // Email TextField //
-        customTextField(
-          controller: emailController,
-          hintText: "example@gmail.com",
-          secure: false,
-          label: "Email",
-          icon: Icons.mail,
+        // Decorated Email TextField //
+        TextFieldDecorator(
+          textField: customTextField(
+            controller: emailController,
+            hintText: "example@gmail.com",
+            secure: false,
+            label: "Email",
+            icon: Icons.mail,
+          ),
+          errorMessage: emailError,
         ),
-        // Margin between fields //
-        margin(width: 0, height: 20),
-        // Password TextField //
-        customTextField(
-          controller: passwordController,
-          hintText: "********",
-          secure: true,
-          label: "Password",
-          icon: Icons.password,
+        _margin(0, 20),
+
+        // Decorated Password TextField //
+        TextFieldDecorator(
+          textField: customTextField(
+            controller: passwordController,
+            hintText: "********",
+            secure: true,
+            label: "Password",
+            icon: Icons.password,
+          ),
+          errorMessage: passwordError,
         ),
-        // Margin between fields //
-        margin(width: 0, height: 20),
-        // Confirm Password TextField //
-        customTextField(
-          controller: confirmPasswordController,
-          hintText: "********",
-          secure: true,
-          label: "Confirm Password",
-          icon: Icons.password,
+        _margin(0, 20),
+
+        // Decorated Confirm Password TextField //
+        TextFieldDecorator(
+          textField: customTextField(
+            controller: confirmPasswordController,
+            hintText: "********",
+            secure: true,
+            label: "Confirm Password",
+            icon: Icons.password,
+          ),
+          errorMessage: confirmPasswordError,
         ),
-        // Margin before register button //
-        margin(width: 0, height: 20),
-        // Register Button //
+        _margin(0, 20),
+
         _registerButton(),
-        // Margin before sign-in prompt //
-        margin(width: 0, height: 20),
-        // Sign In section //
-        _singIn()
+        _margin(0, 20),
+        _signIn()
       ],
     );
   }
@@ -91,7 +106,9 @@ class RegisterPage extends StatelessWidget {
             ),
           ),
         ),
-        onPressed: () {},
+        onPressed: () {
+          // Perform register action or validation
+        },
         child: const Text("Register"),
       ),
     );
@@ -106,7 +123,7 @@ class RegisterPage extends StatelessWidget {
   }
 
   // Sign In Widget //
-  Widget _singIn() {
+  Widget _signIn() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -117,13 +134,39 @@ class RegisterPage extends StatelessWidget {
         GestureDetector(
           onTap: () => Get.offAllNamed('login'),
           child: const Text(
-            "Sing In",
+            "Sign In",
             style: TextStyle(
               fontWeight: FontWeight.bold,
               color: Colors.blue,
             ),
           ),
         )
+      ],
+    );
+  }
+}
+
+// TextField Decorator Class //
+class TextFieldDecorator extends StatelessWidget {
+  final Widget textField;
+  final String? errorMessage;
+
+  TextFieldDecorator({required this.textField, this.errorMessage});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        textField, // Original Text Field
+        if (errorMessage != null) // Add error message if present
+          Padding(
+            padding: const EdgeInsets.only(top: 5.0),
+            child: Text(
+              errorMessage!,
+              style: const TextStyle(color: Colors.red, fontSize: 12),
+            ),
+          ),
       ],
     );
   }

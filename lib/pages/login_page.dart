@@ -6,11 +6,29 @@ import 'package:star_education_center/ulti.dart';
 import 'package:star_education_center/widgets/custom_textfield.dart';
 import 'package:get/route_manager.dart';
 
-// Login Page class //
-class LoginPage extends StatelessWidget {
-  // Controller section //
+// Singleton class for TextEditingController //
+class TextEditingControllerSingleton {
+  // Private static field for the singleton instance //
+  static final TextEditingControllerSingleton _instance =
+      TextEditingControllerSingleton._internal();
+
+  // Private constructor //
+  TextEditingControllerSingleton._internal();
+
+  // Public factory constructor to return the same instance //
+  factory TextEditingControllerSingleton() {
+    return _instance;
+  }
+
+  // Singleton instances of TextEditingControllers //
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+}
+
+// Login Page class //
+class LoginPage extends StatelessWidget {
+  // Singleton Controller instance //
+  final controllers = TextEditingControllerSingleton();
 
   LoginPage({super.key});
 
@@ -47,7 +65,7 @@ class LoginPage extends StatelessWidget {
       children: [
         // Email TextField //
         customTextField(
-          controller: emailController,
+          controller: controllers.emailController,
           hintText: "example@gmail.com",
           secure: false,
           label: "Email",
@@ -56,7 +74,7 @@ class LoginPage extends StatelessWidget {
         margin(width: 0, height: 20),
         // Password TextField //
         customTextField(
-          controller: passwordController,
+          controller: controllers.passwordController,
           hintText: "********",
           secure: true,
           label: "Password",
@@ -89,8 +107,8 @@ class LoginPage extends StatelessWidget {
         ),
         onPressed: () {
           // Hardcoded email and password for authentication
-          if (emailController.text == "admin@gmail.com" &&
-              passwordController.text == "admin@123?") {
+          if (controllers.emailController.text == "admin@gmail.com" &&
+              controllers.passwordController.text == "admin@123?") {
             Get.offAll(HomePage()); // Navigate to home page on successful login
           } else {
             // Show error message if authentication fails
