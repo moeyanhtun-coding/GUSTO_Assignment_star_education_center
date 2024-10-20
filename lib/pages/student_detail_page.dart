@@ -1,4 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -224,9 +223,9 @@ class _StudentDetailsPageState extends State<StudentDetailsPage> {
           );
         },
         style: ButtonStyle(
-          backgroundColor: const WidgetStatePropertyAll(Colors.blue),
-          foregroundColor: const WidgetStatePropertyAll(Colors.white),
-          shape: WidgetStatePropertyAll(
+          backgroundColor: const MaterialStatePropertyAll(Colors.blue),
+          foregroundColor: const MaterialStatePropertyAll(Colors.white),
+          shape: MaterialStatePropertyAll(
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           ),
         ),
@@ -234,6 +233,53 @@ class _StudentDetailsPageState extends State<StudentDetailsPage> {
           "New Enroll",
           style: TextStyle(fontSize: 17),
         ),
+      ),
+    );
+  }
+}
+
+// The State Pattern for Course fetching states
+
+abstract class CourseState {
+  Widget getUI();
+}
+
+class LoadingState extends CourseState {
+  @override
+  Widget getUI() {
+    return const CircularProgressIndicator();
+  }
+}
+
+class LoadedState extends CourseState {
+  final String courseDuration;
+
+  LoadedState(this.courseDuration);
+
+  @override
+  Widget getUI() {
+    return Text(
+      'Course Duration - $courseDuration months',
+      style: const TextStyle(
+        color: Colors.white,
+        fontSize: 15,
+      ),
+    );
+  }
+}
+
+class ErrorState extends CourseState {
+  final String errorMessage;
+
+  ErrorState(this.errorMessage);
+
+  @override
+  Widget getUI() {
+    return Text(
+      'Error: $errorMessage',
+      style: const TextStyle(
+        color: Colors.red,
+        fontSize: 15,
       ),
     );
   }
@@ -248,9 +294,7 @@ class CourseList extends StatelessWidget {
     return Column(
       children: [
         for (int i = 0; i < coruseList.length; i++)
-          Course(
-            courseName: coruseList[i],
-          ),
+          Course(courseName: coruseList[i]),
       ],
     );
   }
@@ -258,7 +302,7 @@ class CourseList extends StatelessWidget {
 
 class Course extends StatefulWidget {
   final String courseName;
-  Course({
+  const Course({
     Key? key,
     required this.courseName,
   }) : super(key: key);
@@ -268,8 +312,7 @@ class Course extends StatefulWidget {
 }
 
 class _CourseState extends State<Course> {
-  String? courseDuration; // To store the duration
-  bool isLoading = true; // To track the loading state
+  CourseState currentState = LoadingState(); // Start with loading state
 
   @override
   void initState() {
@@ -277,20 +320,17 @@ class _CourseState extends State<Course> {
     fetchCourseDuration(); // Fetch course duration on widget initialization
   }
 
-  // Method to fetch the course duration from Firebase
   Future<void> fetchCourseDuration() async {
     try {
       DocumentSnapshot courseData =
           await _coursesService.getCourseByName(widget.courseName);
+      String courseDuration = courseData['courseDuration'];
       setState(() {
-        courseDuration = courseData[
-            'courseDuration']; // Assuming 'duration' is the field name
-        isLoading = false;
+        currentState = LoadedState(courseDuration);
       });
     } catch (error) {
-      print('Error fetching course duration: $error');
       setState(() {
-        isLoading = false;
+        currentState = ErrorState(error.toString());
       });
     }
   }
@@ -314,28 +354,18 @@ class _CourseState extends State<Course> {
               children: [
                 Text(
                   widget.courseName,
-                  style: TextStyle(
-                    color: Colors.blue,
-                    fontSize: 18,
+                  style: const TextStyle(
+                    color: Colors.white,
                     fontWeight: FontWeight.bold,
+                    fontSize: 15,
                   ),
                 ),
-                isLoading
-                    ? CircularProgressIndicator() // Show loading indicator while data is fetching
-                    : Text(
-                        courseDuration != null
-                            ? 'Course Duration - $courseDuration months' // Display the duration if fetched
-                            : 'Duration not available',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 15,
-                        ),
-                      ),
+                currentState.getUI(),
               ],
             ),
           ),
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 15),
       ],
     );
   }
