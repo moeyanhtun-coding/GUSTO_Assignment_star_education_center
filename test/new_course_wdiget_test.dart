@@ -17,35 +17,35 @@ void main() {
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Container(
-                    padding: EdgeInsets.all(20),
+                    padding: const EdgeInsets.all(20),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        TextField(
+                        const TextField(
                           key: Key('courseNameField'),
                           decoration: InputDecoration(
                             label: Text("Course Name"),
                           ),
                         ),
-                        SizedBox(height: 20),
-                        TextField(
+                        const SizedBox(height: 20),
+                        const TextField(
                           key: Key('courseFeesField'),
                           decoration: InputDecoration(
                             label: Text("Fees"),
                           ),
                         ),
-                        SizedBox(height: 20),
-                        TextField(
+                        const SizedBox(height: 20),
+                        const TextField(
                           key: Key('courseDurationField'),
                           decoration: InputDecoration(
                             label: Text("Duration"),
                           ),
                         ),
-                        SizedBox(height: 20),
+                        const SizedBox(height: 20),
                         ElevatedButton(
                           onPressed: () {},
-                          child: Text("Create"),
+                          child: const Text("Create"),
                         ),
                       ],
                     ),
