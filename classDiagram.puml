@@ -1,27 +1,527 @@
 @startuml
-'https://plantuml.com/class-diagram
+set namespaceSeparator ::
 
-abstract class AbstractList
-abstract AbstractCollection
-interface List
-interface Collection
-
-List <|-- AbstractList
-Collection <|-- AbstractCollection
-
-Collection <|- List
-AbstractCollection <|- AbstractList
-AbstractList <|-- ArrayList
-
-class ArrayList {
-Object[] elementData
-size()
+class "star_education_center::firebase_options.dart::DefaultFirebaseOptions" {
+  {static} +FirebaseOptions android
+  {static} +FirebaseOptions currentPlatform
 }
 
-enum TimeUnit {
-DAYS
-HOURS
-MINUTES
+"star_education_center::firebase_options.dart::DefaultFirebaseOptions" o-- "firebase_core_platform_interface::firebase_core_platform_interface.dart::FirebaseOptions"
+
+class "star_education_center::models::course_model.dart::CourseModel" {
+  -String _cId
+  +String courseName
+  +String courseDuration
+  +double fees
+  +String courseId
 }
+
+class "star_education_center::models::student_model.dart::StudentModel" {
+  -String _sId
+  +String name
+  +String email
+  +String phone
+  +String section
+  +List<String> courseName
+}
+
+class "star_education_center::models::student_model.dart::NewStudent" {
+  {static} +num discount
+}
+
+"star_education_center::models::student_model.dart::StudentModel" <|-- "star_education_center::models::student_model.dart::NewStudent"
+
+class "star_education_center::models::student_model.dart::PremiumStudent" {
+  {static} +num discount
+}
+
+"star_education_center::models::student_model.dart::StudentModel" <|-- "star_education_center::models::student_model.dart::PremiumStudent"
+
+class "star_education_center::models::student_model.dart::PlatinumStudent" {
+  {static} +num discount
+}
+
+"star_education_center::models::student_model.dart::StudentModel" <|-- "star_education_center::models::student_model.dart::PlatinumStudent"
+
+class "star_education_center::main.dart::MyApp" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "star_education_center::main.dart::MyApp"
+
+class "star_education_center::pages::register_page.dart::RegisterPage" {
+  +TextEditingController emailController
+  +TextEditingController passwordController
+  +TextEditingController confirmPasswordController
+  +Widget build()
+  -Widget _registerForm()
+  -Widget _registerButton()
+  -Widget _margin()
+  -Widget _signIn()
+}
+
+"star_education_center::pages::register_page.dart::RegisterPage" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "star_education_center::pages::register_page.dart::RegisterPage"
+
+class "star_education_center::pages::register_page.dart::TextFieldDecorator" {
+  +Widget textField
+  +String? errorMessage
+  +Widget build()
+}
+
+"star_education_center::pages::register_page.dart::TextFieldDecorator" o-- "flutter::src::widgets::framework.dart::Widget"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "star_education_center::pages::register_page.dart::TextFieldDecorator"
+
+class "star_education_center::pages::student_detail_page.dart::StudentDetailsPage" {
+  +String name
+  +String email
+  +String studentId
+  +String phone
+  +String section
+  +List<String> courseName
+  +String documentId
+  +State<StudentDetailsPage> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "star_education_center::pages::student_detail_page.dart::StudentDetailsPage"
+
+class "star_education_center::pages::student_detail_page.dart::_StudentDetailsPageState" {
+  +void initState()
+  +Widget build()
+  -Widget _about()
+  -Widget _enrolled()
+  -Widget _newEnroll()
+}
+
+"flutter::src::widgets::framework.dart::State" <|-- "star_education_center::pages::student_detail_page.dart::_StudentDetailsPageState"
+
+abstract class "star_education_center::pages::student_detail_page.dart::CourseState" {
+  +Widget getUI()
+}
+
+class "star_education_center::pages::student_detail_page.dart::LoadingState" {
+  +Widget getUI()
+}
+
+"star_education_center::pages::student_detail_page.dart::CourseState" <|-- "star_education_center::pages::student_detail_page.dart::LoadingState"
+
+class "star_education_center::pages::student_detail_page.dart::LoadedState" {
+  +String courseDuration
+  +Widget getUI()
+}
+
+"star_education_center::pages::student_detail_page.dart::CourseState" <|-- "star_education_center::pages::student_detail_page.dart::LoadedState"
+
+class "star_education_center::pages::student_detail_page.dart::ErrorState" {
+  +String errorMessage
+  +Widget getUI()
+}
+
+"star_education_center::pages::student_detail_page.dart::CourseState" <|-- "star_education_center::pages::student_detail_page.dart::ErrorState"
+
+class "star_education_center::pages::student_detail_page.dart::CourseList" {
+  +List<String> coruseList
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "star_education_center::pages::student_detail_page.dart::CourseList"
+
+class "star_education_center::pages::student_detail_page.dart::Course" {
+  +String courseName
+  +_CourseState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "star_education_center::pages::student_detail_page.dart::Course"
+
+class "star_education_center::pages::student_detail_page.dart::_CourseState" {
+  +CourseState currentState
+  +void initState()
+  +dynamic fetchCourseDuration()
+  +Widget build()
+}
+
+"star_education_center::pages::student_detail_page.dart::_CourseState" o-- "star_education_center::pages::student_detail_page.dart::CourseState"
+"flutter::src::widgets::framework.dart::State" <|-- "star_education_center::pages::student_detail_page.dart::_CourseState"
+
+class "star_education_center::pages::courses_add_page.dart::CoursesAddPage" {
+  +String section
+  +String studentId
+  +String name
+  +String email
+  +String phone
+  +List<String> courseName
+  +String documentId
+  +State<CoursesAddPage> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "star_education_center::pages::courses_add_page.dart::CoursesAddPage"
+
+class "star_education_center::pages::courses_add_page.dart::_CoursesAddPageState" {
+  +void initState()
+  -void _fetchExistingCourses()
+  +void updateTotalPrice()
+  +Widget build()
+  -Widget _buildBody()
+  -Widget _header()
+  -Widget _searchBar()
+  -Widget _streamCourses()
+}
+
+"flutter::src::widgets::framework.dart::State" <|-- "star_education_center::pages::courses_add_page.dart::_CoursesAddPageState"
+
+class "star_education_center::pages::courses_add_page.dart::CourseEnroll" {
+  +String courseName
+  +double courseFees
+  +dynamic Function(bool, double) onSelectionChanged
+  +State<CourseEnroll> createState()
+}
+
+"star_education_center::pages::courses_add_page.dart::CourseEnroll" o-- "null::dynamic Function(bool, double)"
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "star_education_center::pages::courses_add_page.dart::CourseEnroll"
+
+class "star_education_center::pages::courses_add_page.dart::_CourseEnrollState" {
+  -bool _isSelected
+  -void _toggleSelection()
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State" <|-- "star_education_center::pages::courses_add_page.dart::_CourseEnrollState"
+
+class "star_education_center::pages::courses_add_page.dart::BottomContainer" {
+  +String studentId
+  +String name
+  +String email
+  +String phone
+  +double total
+  +String section
+  +List<String> courseName
+  +String documentId
+  +State<BottomContainer> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "star_education_center::pages::courses_add_page.dart::BottomContainer"
+
+class "star_education_center::pages::courses_add_page.dart::_BottomContainerState" {
+  +double calculateDiscount()
+  -void _totalCheckOut()
+  +Widget build()
+  -Widget _headerSection()
+  -Widget _detail()
+  -Widget _voucherDetail()
+  -Widget _voucherTotalDetail()
+}
+
+"flutter::src::widgets::framework.dart::State" <|-- "star_education_center::pages::courses_add_page.dart::_BottomContainerState"
+
+class "star_education_center::pages::login_page.dart::TextEditingControllerSingleton" {
+  {static} -TextEditingControllerSingleton _instance
+  +TextEditingController emailController
+  +TextEditingController passwordController
+}
+
+"star_education_center::pages::login_page.dart::TextEditingControllerSingleton" o-- "star_education_center::pages::login_page.dart::TextEditingControllerSingleton"
+"star_education_center::pages::login_page.dart::TextEditingControllerSingleton" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+
+class "star_education_center::pages::login_page.dart::LoginPage" {
+  +TextEditingControllerSingleton controllers
+  +Widget build()
+  -Widget _loginForm()
+  -Widget _loginButton()
+  -Widget _signUp()
+}
+
+"star_education_center::pages::login_page.dart::LoginPage" o-- "star_education_center::pages::login_page.dart::TextEditingControllerSingleton"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "star_education_center::pages::login_page.dart::LoginPage"
+
+class "star_education_center::pages::home_page.dart::HomePage" {
+  +State<HomePage> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "star_education_center::pages::home_page.dart::HomePage"
+
+class "star_education_center::pages::home_page.dart::_HomePageState" {
+  -List<Widget> _pages
+  +TextEditingController nameController
+  +TextEditingController emailController
+  +TextEditingController phoneController
+  +TextEditingController courseNameController
+  +TextEditingController courseFeesController
+  +TextEditingController courseDurationController
+  +void initState()
+  -void _showSnackBar()
+  +Widget build()
+  -Widget _nothing()
+  -AppBar _buildAppBar()
+  -Widget _buildTitle()
+  -Widget _header()
+  -BottomNavigationBar _buildBottomNavigationBar()
+}
+
+"star_education_center::pages::home_page.dart::_HomePageState" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"flutter::src::widgets::framework.dart::State" <|-- "star_education_center::pages::home_page.dart::_HomePageState"
+
+class "star_education_center::pages::home_page.dart::HomeContent" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "star_education_center::pages::home_page.dart::HomeContent"
+
+class "star_education_center::pages::home_page.dart::HeaderGroup" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "star_education_center::pages::home_page.dart::HeaderGroup"
+
+class "star_education_center::pages::home_page.dart::EnrollNowButton" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "star_education_center::pages::home_page.dart::EnrollNowButton"
+
+class "star_education_center::pages::home_page.dart::PageImage" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "star_education_center::pages::home_page.dart::PageImage"
+
+class "star_education_center::pages::home_page.dart::TotalGroup" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "star_education_center::pages::home_page.dart::TotalGroup"
+
+class "star_education_center::pages::home_page.dart::TotalCategory" {
+  +IconData icon
+  +String total
+  +String name
+  +Widget build()
+}
+
+"star_education_center::pages::home_page.dart::TotalCategory" o-- "flutter::src::widgets::icon_data.dart::IconData"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "star_education_center::pages::home_page.dart::TotalCategory"
+
+class "star_education_center::pages::home_page.dart::HeaderGroup2" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "star_education_center::pages::home_page.dart::HeaderGroup2"
+
+class "star_education_center::pages::home_page.dart::CourseCarousel" {
+  +dynamic fetchCourses()
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "star_education_center::pages::home_page.dart::CourseCarousel"
+
+class "star_education_center::pages::home_page.dart::CertificateSection" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "star_education_center::pages::home_page.dart::CertificateSection"
+
+class "star_education_center::pages::home_page.dart::StartLearningButton" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "star_education_center::pages::home_page.dart::StartLearningButton"
+
+class "star_education_center::pages::home_page.dart::DateOfBirthPicker" {
+  +_DateOfBirthPickerState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "star_education_center::pages::home_page.dart::DateOfBirthPicker"
+
+class "star_education_center::pages::home_page.dart::_DateOfBirthPickerState" {
+  -dynamic _selectDate()
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State" <|-- "star_education_center::pages::home_page.dart::_DateOfBirthPickerState"
+
+class "star_education_center::pages::home_page.dart::CourseList" {
+  +Map<String, dynamic> course
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "star_education_center::pages::home_page.dart::CourseList"
+
+class "star_education_center::pages::home_page.dart::Course" {
+  +String courseDuration
+  +String courseName
+  +double fees
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "star_education_center::pages::home_page.dart::Course"
+
+class "star_education_center::pages::courses_page.dart::CoursesPage" {
+  +State<CoursesPage> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "star_education_center::pages::courses_page.dart::CoursesPage"
+
+class "star_education_center::pages::courses_page.dart::_CoursesPageState" {
+  +Widget build()
+  -Widget _coursesPage()
+}
+
+"flutter::src::widgets::framework.dart::State" <|-- "star_education_center::pages::courses_page.dart::_CoursesPageState"
+
+class "star_education_center::pages::courses_page.dart::Header1" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "star_education_center::pages::courses_page.dart::Header1"
+
+class "star_education_center::pages::courses_page.dart::Header2" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "star_education_center::pages::courses_page.dart::Header2"
+
+class "star_education_center::pages::courses_page.dart::SearchBar" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "star_education_center::pages::courses_page.dart::SearchBar"
+
+class "star_education_center::pages::courses_page.dart::CourseList" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "star_education_center::pages::courses_page.dart::CourseList"
+
+class "star_education_center::pages::courses_page.dart::Course" {
+  +String courseDuration
+  +String courseName
+  +double fees
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "star_education_center::pages::courses_page.dart::Course"
+
+class "star_education_center::pages::student_page.dart::StudentPage" {
+  +State<StudentPage> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "star_education_center::pages::student_page.dart::StudentPage"
+
+class "star_education_center::pages::student_page.dart::_StudentPageState" {
+  -TextEditingController _nameController
+  -TextEditingController _emailController
+  -TextEditingController _phoneController
+  -TextEditingController _dateController
+  +String searchString
+  +void updateStudent()
+  +Widget build()
+}
+
+"star_education_center::pages::student_page.dart::_StudentPageState" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"flutter::src::widgets::framework.dart::State" <|-- "star_education_center::pages::student_page.dart::_StudentPageState"
+
+class "star_education_center::pages::student_page.dart::SearchBar" {
+  +dynamic Function(String) onChanged
+  +Widget build()
+}
+
+"star_education_center::pages::student_page.dart::SearchBar" o-- "null::dynamic Function(String)"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "star_education_center::pages::student_page.dart::SearchBar"
+
+class "star_education_center::pages::student_page.dart::Header" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "star_education_center::pages::student_page.dart::Header"
+
+class "star_education_center::pages::student_page.dart::StudentList" {
+  +String searchString
+  +dynamic Function(String, String) updateStudent
+  +Widget build()
+}
+
+"star_education_center::pages::student_page.dart::StudentList" o-- "null::dynamic Function(String, String)"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "star_education_center::pages::student_page.dart::StudentList"
+
+class "star_education_center::pages::student_page.dart::Student" {
+  +String name
+  +String email
+  +String documentId
+  +String studentId
+  +String section
+  +List<String> courseName
+  +dynamic Function(String, String) updateStudent
+  +String phone
+  +Widget build()
+}
+
+"star_education_center::pages::student_page.dart::Student" o-- "null::dynamic Function(String, String)"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "star_education_center::pages::student_page.dart::Student"
+
+abstract class "star_education_center::services::student_firestore_service.dart::StudentDatabase" {
+  +dynamic registerStudent()
+  +Stream<QuerySnapshot<Object?>> searchStudentsByName()
+  +Stream<QuerySnapshot<Object?>> getStudents()
+  +dynamic deleteStudent()
+  +dynamic getStudentById()
+  +dynamic updateStudent()
+  +dynamic updateCourseStudent()
+}
+
+class "star_education_center::services::student_firestore_service.dart::FirestoreStudentDatabase" {
+  +FirebaseFirestore db
+  +CollectionReference<Object?> students
+  +Uuid uuid
+  +dynamic registerStudent()
+  +Stream<QuerySnapshot<Object?>> searchStudentsByName()
+  +Stream<QuerySnapshot<Object?>> getStudents()
+  +dynamic deleteStudent()
+  +dynamic getStudentById()
+  +dynamic updateStudent()
+  +dynamic updateCourseStudent()
+}
+
+"star_education_center::services::student_firestore_service.dart::FirestoreStudentDatabase" o-- "cloud_firestore::cloud_firestore.dart::FirebaseFirestore"
+"star_education_center::services::student_firestore_service.dart::FirestoreStudentDatabase" o-- "cloud_firestore::cloud_firestore.dart::CollectionReference<Object>"
+"star_education_center::services::student_firestore_service.dart::FirestoreStudentDatabase" o-- "uuid::uuid.dart::Uuid"
+"star_education_center::services::student_firestore_service.dart::StudentDatabase" <|-- "star_education_center::services::student_firestore_service.dart::FirestoreStudentDatabase"
+
+abstract class "star_education_center::services::course_firestore_service.dart::CourseService" {
+  +dynamic createCourse()
+  +Stream<QuerySnapshot<Object?>> getCourses()
+  +dynamic getCourseByName()
+}
+
+abstract class "star_education_center::services::course_firestore_service.dart::UuidService" {
+  +String generateUuid()
+}
+
+class "star_education_center::services::course_firestore_service.dart::DefaultUuidService" {
+  -Uuid _uuid
+  +String generateUuid()
+}
+
+"star_education_center::services::course_firestore_service.dart::DefaultUuidService" o-- "uuid::uuid.dart::Uuid"
+"star_education_center::services::course_firestore_service.dart::UuidService" <|-- "star_education_center::services::course_firestore_service.dart::DefaultUuidService"
+
+class "star_education_center::services::course_firestore_service.dart::LoggerService" {
+  +void logError()
+}
+
+class "star_education_center::services::course_firestore_service.dart::CourseFirestoreService" {
+  -FirebaseFirestore _db
+  -UuidService _uuidService
+  -LoggerService _loggerService
+  -CollectionReference<Object?> _courses
+  +dynamic createCourse()
+  +Stream<QuerySnapshot<Object?>> getCourses()
+  +dynamic getCourseByName()
+}
+
+"star_education_center::services::course_firestore_service.dart::CourseFirestoreService" o-- "cloud_firestore::cloud_firestore.dart::FirebaseFirestore"
+"star_education_center::services::course_firestore_service.dart::CourseFirestoreService" o-- "star_education_center::services::course_firestore_service.dart::UuidService"
+"star_education_center::services::course_firestore_service.dart::CourseFirestoreService" o-- "star_education_center::services::course_firestore_service.dart::LoggerService"
+"star_education_center::services::course_firestore_service.dart::CourseFirestoreService" o-- "cloud_firestore::cloud_firestore.dart::CollectionReference<Object>"
+"star_education_center::services::course_firestore_service.dart::CourseService" <|-- "star_education_center::services::course_firestore_service.dart::CourseFirestoreService"
+
 
 @enduml
