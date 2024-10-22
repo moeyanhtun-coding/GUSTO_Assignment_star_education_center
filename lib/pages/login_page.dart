@@ -59,7 +59,7 @@ class LoginPage extends StatelessWidget {
     );
   }
 
-  // Login Form section //
+  // Login Form section // 
   Widget _loginForm(context) {
     return Column(
       children: [
